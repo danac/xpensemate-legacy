@@ -16,9 +16,14 @@ class TestDB:
     def tearDown(self):
         pass
 
-    def testQueryOpenBalances(self):
-        balances = DBInterface.getOpenBalances()
-
+    def testFirstTry(self):
+        interface = DBInterface("")
+        interface.createStructure()
+        balances = interface.getOpenBalances()
+        print("Begin dump")
+        for balance in balances:
+            print(balance)
+        print("End dump")
 
 
 

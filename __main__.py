@@ -22,8 +22,8 @@ if __name__ == "__main__":
     print(e)
 
     print("TESTING DB")
-    DBInterface.init_db("expenses2.db")
+    interface = DBInterface("expenses2.db")
 
-    for balance in DBInterface.getOpenBalances():
+    for balance in interface.getOpenBalances():
         print(balance)
         print("-----")

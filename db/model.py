@@ -1,9 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from . import Base
 from ..expense import Balance, Expense
+from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
+
+db_template = "sqlite:///expense_manager/db/db_structure.db"
+template_engine = create_engine(db_template, echo=False)
+Base = declarative_base(bind=template_engine)
+
+def createStructure(engine):
+    Base.metadata.create_all(engine)
 
 class DbPerson(Base):
     __tablename__ = "person"

@@ -18,7 +18,7 @@ class TestBalance:
 
     def test_constructor(self):
 
-        with assert_raises(TypeError):
+        with assert_raises(ValueError):
             Balance(1, ["Dana"], 2013, 2)
 
         with assert_raises(ValueError):
