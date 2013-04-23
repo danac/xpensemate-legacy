@@ -7,12 +7,12 @@ from .common import Log, Constants
 class Expense:
 
     def __init__(self, ID, year, month, day, buyer, amount, description):
-        self.ID          = ID
-        self.year        = year
-        self.month       = month
-        self.day         = day
+        self.ID          = int(ID)
+        self.year        = int(year)
+        self.month       = int(month)
+        self.day         = int(day)
         self.buyer       = buyer
-        self.amount      = amount
+        self.amount      = float(amount)
         self.description = description
 
         self.valueCheck()
@@ -62,8 +62,8 @@ class Expense:
         if self.buyer == "":
             raise ValueError("Nom invalide.")
 
-        if type(self.amount) is not float:
-            raise TypeError("Montant invalide.")
+        if type(self.amount) is not float and type(self.amount) is not int:
+            raise TypeError("Montant invalide (type \"{}\".".format(type(self.amount)))
 
         if not self.amount > 0:
             raise ValueError("Montant invalide.")
@@ -96,6 +96,7 @@ class Balance:
         self.personal_diff = {}
         self.personal_debts = {}
 
+        self.reset()
         self.valueCheck()
 
     def reset(self):
@@ -116,6 +117,7 @@ class Balance:
         self.reset()
 
         for expense in self.expenses:
+            self.total += expense.amount
             self.personal_paid[expense.buyer] += expense.amount
 
         self.average = self.total / len(self.debtors)
@@ -128,7 +130,8 @@ class Balance:
         for payer in self.debtors:
             if self.personal_diff[payer] < 0 and self.total_delta != 0.0:
                 debt = {}
-                for receiver in self.debtors:
+                receivers = [debtor for debtor in self.debtors if self.personal_diff[debtor] > 0]
+                for receiver in receivers:
                     ratio = self.personal_diff[receiver] / self.total_delta
                     debt[receiver] = abs(self.personal_diff[payer]) * ratio
                 self.personal_debts[payer] = debt
@@ -220,7 +223,7 @@ class Balance:
                     "Le nom \"{}\" n'est pas inscrit au bilan (dépense \"{}\")."
                         .format(expense.buyer, expense.description) )
 
-            total += expense.amount
+            test_total += expense.amount
 
         assert test_total == self.total, (
             "Le montant total dans le bilan \"{}\" est faux "
@@ -265,6 +268,8 @@ class Balance:
 
             if len(self.personal_debts[payer]) != 0:
                 for receiver in self.personal_debts[payer] :
+                    if receiver == payer:
+                        continue
                     assert receiver in self.debtors, (
                         "La personne \"{}\" (dans les dettes de \"{}\" dans le bilan \"{}\") n'est pas inscrite au bilan."
                             .format(receiver, payer, self.ID) )
@@ -300,6 +305,7 @@ class Balance:
                     .format(expense.buyer, expense.description) )
 
         self.expenses.append(expense)
+        self.calculate()
 
     def __repr__(self, indent = 0):
         indentation = Constants.INDENT
