@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import assert_equals, assert_raises
-from expense_manager.expense import Expense
+from expense_manager.core import Expense
 
 class TestExpense:
 

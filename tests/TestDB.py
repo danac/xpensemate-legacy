@@ -17,13 +17,9 @@ class TestDB:
         pass
 
     def testFirstTry(self):
-        interface = DBInterface("")
+        interface = DBInterface("expense_test.db")
         interface.createStructure()
         balances = interface.getOpenBalances()
-        print("Begin dump")
         for balance in balances:
             print(balance)
-        print("End dump")
-
-
 

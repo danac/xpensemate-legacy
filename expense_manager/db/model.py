@@ -1,12 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ..expense import Balance, Expense
+from ..core import Balance, Expense
 from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+import inspect, os
 
-db_template = "sqlite:///expense_manager/db/db_structure.db"
+
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+db_file = os.path.join(current_dir, "db_structure.db")
+db_template = "sqlite:///" + db_file
 template_engine = create_engine(db_template, echo=False)
 Base = declarative_base(bind=template_engine)
 
@@ -24,7 +28,16 @@ class DbExpense(Base):
     buyer = relationship("DbPerson")
 
     def makeExpense(self):
-        return Expense(ID=self.id, year=self.year, month=self.month, day=self.day, buyer=self.buyer.name, amount=self.amount, description=self.description)
+        expense = Expense(
+                            ID          = self.id,
+                            year        = self.year,
+                            month       = self.month,
+                            day         = self.day,
+                            buyer       = self.buyer.name,
+                            amount      = self.amount,
+                            description = self.description
+                         )
+        return expense
 
 class DbBalancePerson(Base):
     __tablename__ = "balance_person"

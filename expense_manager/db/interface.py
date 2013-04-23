@@ -1,15 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ..expense import Expense, Balance
+from ..core import Expense, Balance
 from . import model
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 class DBInterface:
 
-    def __init__(self, database, echo = False):
-        db_path = "sqlite://" + database
+    def __init__(self, database= "", echo = False):
+        db_path = ""
+        if database == "":
+            db_path = "sqlite://"
+        else:
+            db_path = "sqlite:///" + database
         self.engine = create_engine(db_path, echo=echo)
         self.Session = sessionmaker(bind=self.engine)
 
