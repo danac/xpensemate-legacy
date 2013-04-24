@@ -1,12 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ..core import Balance, Expense
+from ..core import Balance, Expense, Log
 from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import inspect, os
-
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 db_file = os.path.join(current_dir, "db_structure.db")
@@ -16,6 +15,7 @@ Base = declarative_base(bind=template_engine)
 
 def createStructure(engine):
     Base.metadata.create_all(engine)
+    Log.info("Database structure created.")
 
 class DbPerson(Base):
     __tablename__ = "person"
