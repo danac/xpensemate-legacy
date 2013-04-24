@@ -2,16 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from ..core import Balance, Expense, Log
-from sqlalchemy import create_engine
+from sqlalchemy import Column, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import inspect, os
 
-current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-db_file = os.path.join(current_dir, "db_structure.db")
-db_template = "sqlite:///" + db_file
-template_engine = create_engine(db_template, echo=False)
-Base = declarative_base(bind=template_engine)
+Base = declarative_base()
 
 def createStructure(engine):
     Base.metadata.create_all(engine)
@@ -19,33 +15,46 @@ def createStructure(engine):
 
 class DbPerson(Base):
     __tablename__ = "person"
-    __table_args__ = {'autoload': True}
+    id = Column("id", Integer, primary_key=True)
+    name = Column("name", String(50))
 
 class DbExpense(Base):
     __tablename__ = "expense"
-    __table_args__ = {'autoload': True}
+
+    id          = Column("id",          Integer,     primary_key = True)
+    year        = Column("year",        Integer,     nullable = False)
+    month       = Column("moth",        Integer,     nullable = False)
+    day         = Column("day",         Integer,     nullable = False)
+    description = Column("description", String(500), nullable = False)
+    amount      = Column("amount",      Float,       nullable = False)
+    person_id   = Column("person_id",   Integer,     nullable = False, ForeignKey("person.id"))
 
     buyer = relationship("DbPerson")
 
     def makeExpense(self):
         expense = Expense(
-                            ID          = self.id,
-                            year        = self.year,
-                            month       = self.month,
-                            day         = self.day,
-                            buyer       = self.buyer.name,
-                            amount      = self.amount,
-                            description = self.description
-                         )
+            ID          = self.id,
+            year        = self.year,
+            month       = self.month,
+            day         = self.day,
+            buyer       = self.buyer.name,
+            amount      = self.amount,
+            description = self.description )
         return expense
 
 class DbBalancePerson(Base):
     __tablename__ = "balance_person"
-    __table_args__ = {'autoload': True}
+
+    balance_id = Column("balance_id", Integer, nullable = False, ForeignKey("balance.id"), primary_key = True)
+    person_id  = Column("person_id",  Integer, nullable = False, ForeignKey("person.id"), primary_key = True)
 
 class DbBalance(Base):
     __tablename__ = "balance"
-    __table_args__ = {'autoload': True}
+
+    id    = Column("id",   Integer, primary_key = True)
+    yea   = Column("year", Integer, nullable = False)
+    month = Column("moth", Integer, nullable = False)
+    day   = Column("day",  Integer, nullable = False)
 
     persons = relationship("DbPerson", secondary = DbBalancePerson.__table__)
     expenses = relationship("DbExpense", backref = "balance")
@@ -59,3 +68,4 @@ class DbBalance(Base):
             balance.addExpense(expense.makeExpense())
 
         return balance
+
