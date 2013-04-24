@@ -76,7 +76,7 @@ class Expense:
 
     def __repr__(self, indent = 0):
         description = ' '*indent
-        description += ( "Expense {ID}: {amount} by {buyer} on {year}-{month:02}-{day:02}"
+        description += ( "Expense {ID}, {amount} by {buyer} on {year}-{month:02}-{day:02}."
             .format(**self.__dict__) )
         return description
 
@@ -307,17 +307,21 @@ class Balance:
         self.expenses.append(expense)
         self.calculate()
 
-    def __repr__(self, indent = 0):
-        indentation = Constants.INDENT
+    def __repr__(self, indent = 0, dump = False):
+        indentation = indent
         description = "Balance {}, shared by {}".format(self.ID, ', '.join(self.debtors))
         if(self.day is not None):
             description += " closed on {year}-{month:02}-{day:02}".format(**self.__dict__)
-        description += ":\n"
-        if len(self.expenses) > 0:
-            for expense in self.expenses:
-                description += expense.__repr__(indentation)
+        if len(self.expenses) == 0:
+            description += ' '*indentation + ", no expense."
         else:
-            description += ' '*indentation + "No expense."
+            if dump:
+                description += ":\n"
+                for expense in self.expenses:
+                    description += expense.__repr__(indentation)
+
+            else:
+                description += ' '*indentation + ", {} expense(s).".format(len(self.expenses))
 
         return description
 
