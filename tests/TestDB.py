@@ -5,7 +5,7 @@ from nose.tools import assert_equals, assert_raises
 from expense_manager.db import DBInterface
 import hashlib, os, tempfile, inspect
 
-class TestDBSQLite:
+class TestSQLiteIO:
 
     @classmethod
     def setupClass(cls):
@@ -29,16 +29,35 @@ class TestDBSQLite:
         digest = hashlib.md5(fhdl.read()).hexdigest()
         fhdl.close()
         #os.remove(fname)
-        assert digest == "bc6c6e6f3dc1e1106abd8b0946d1d682"
+        assert digest == "d460c690bfffc07a7b49691f2bc3e2e6"
 
-    def test_add_query_expense(self):
+class TestSQLiteQuery:
+
+    @classmethod
+    def setupClass(cls):
         pass
 
-    def test_query_open_balance(self):
+    def setUp(self):
         current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
         db_file = os.path.join(current_dir, "test_database.db")
+        self.iface = DBInterface(db_file)
 
-        iface = DBInterface(db_file)
+    def tearDown(self):
+        pass
 
-        balances = iface.getOpenBalances()
-        assert balances.__repr__() == "[Balance 2, shared by Dana, Alizée, Loïc, 1 expense(s).]"
+    def test_query_persons(self):
+        persons = self.iface.getPersons()
+        assert persons.__repr__() == "['Dana', 'Alizée', 'Loïc', 'Mick']"
+
+    def test_query_open_balance(self):
+        balances = self.iface.getOpenBalances()
+        assert balances.__repr__() == "[Balance 1, shared by Dana, Mick, 1 expense(s).]"
+
+    def test_query_closed_balance(self):
+        balances = self.iface.getClosedBalances()
+        assert balances.__repr__() == "[Balance 2, shared by Dana, Alizée, Loïc closed on 2013-04-16, 1 expense(s).]"
+
+    def test_query_expense(self):
+        expense = self.iface.getExpense(year=2013, day=29, id=2)
+        assert expense.__repr__() == "[Expense 2, 0.5 by Dana on 2013-04-29.]"
+

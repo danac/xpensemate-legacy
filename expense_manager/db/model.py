@@ -23,7 +23,7 @@ class DbExpense(Base):
 
     id          = Column("id",          Integer, primary_key = True)
     year        = Column("year",        Integer,                           nullable = False)
-    month       = Column("moth",        Integer,                           nullable = False)
+    month       = Column("month",        Integer,                           nullable = False)
     day         = Column("day",         Integer,                           nullable = False)
     description = Column("description", Text,                              nullable = False)
     amount      = Column("amount",      Float,                             nullable = False)
@@ -56,7 +56,7 @@ class DbBalance(Base):
 
     id    = Column("id",   Integer, primary_key = True)
     year  = Column("year", Integer)
-    month = Column("moth", Integer)
+    month = Column("month", Integer)
     day   = Column("day",  Integer)
 
     persons = relationship("DbPerson", secondary = DbBalancePerson.__table__)
