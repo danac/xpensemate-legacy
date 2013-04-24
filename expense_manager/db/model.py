@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from ..core import Balance, Expense, Log
-from sqlalchemy import Column, Integer, ForeignKey, String
+from sqlalchemy import Column, Integer, ForeignKey, String, Float, Text, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import inspect, os
@@ -21,15 +21,17 @@ class DbPerson(Base):
 class DbExpense(Base):
     __tablename__ = "expense"
 
-    id          = Column("id",          Integer,     primary_key = True)
-    year        = Column("year",        Integer,     nullable = False)
-    month       = Column("moth",        Integer,     nullable = False)
-    day         = Column("day",         Integer,     nullable = False)
-    description = Column("description", String(500), nullable = False)
-    amount      = Column("amount",      Float,       nullable = False)
-    person_id   = Column("person_id",   Integer,     nullable = False, ForeignKey("person.id"))
+    id          = Column("id",          Integer, primary_key = True)
+    year        = Column("year",        Integer,                           nullable = False)
+    month       = Column("moth",        Integer,                           nullable = False)
+    day         = Column("day",         Integer,                           nullable = False)
+    description = Column("description", Text,                              nullable = False)
+    amount      = Column("amount",      Float,                             nullable = False)
+    person_id   = Column("person_id",   Integer, ForeignKey("person.id"),  nullable = False)
+    balance_id  = Column("balance_id",  Integer, ForeignKey("balance.id"), nullable = False)
 
     buyer = relationship("DbPerson")
+    balance = relationship("DbBalance")
 
     def makeExpense(self):
         expense = Expense(
@@ -40,24 +42,25 @@ class DbExpense(Base):
             buyer       = self.buyer.name,
             amount      = self.amount,
             description = self.description )
+        Log.debug("Made an expense: {}".format(expense))
         return expense
 
 class DbBalancePerson(Base):
     __tablename__ = "balance_person"
 
-    balance_id = Column("balance_id", Integer, nullable = False, ForeignKey("balance.id"), primary_key = True)
-    person_id  = Column("person_id",  Integer, nullable = False, ForeignKey("person.id"), primary_key = True)
+    balance_id = Column("balance_id", Integer, ForeignKey("balance.id"), nullable = False, primary_key = True)
+    person_id  = Column("person_id",  Integer, ForeignKey("person.id"),  nullable = False, primary_key = True)
 
 class DbBalance(Base):
     __tablename__ = "balance"
 
     id    = Column("id",   Integer, primary_key = True)
-    yea   = Column("year", Integer, nullable = False)
-    month = Column("moth", Integer, nullable = False)
-    day   = Column("day",  Integer, nullable = False)
+    year  = Column("year", Integer)
+    month = Column("moth", Integer)
+    day   = Column("day",  Integer)
 
     persons = relationship("DbPerson", secondary = DbBalancePerson.__table__)
-    expenses = relationship("DbExpense", backref = "balance")
+    expenses = relationship("DbExpense")
 
     def makeBalance(self):
         names = []
@@ -67,5 +70,6 @@ class DbBalance(Base):
         for expense in self.expenses:
             balance.addExpense(expense.makeExpense())
 
+        Log.debug("Made a balance: {}".format(balance))
         return balance
 
