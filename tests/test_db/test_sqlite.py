@@ -49,11 +49,11 @@ class TestSQLiteQuery:
         persons = self.iface.getPersons()
         assert persons.__repr__() == "['Dana', 'Alizée', 'Loïc', 'Mick']"
 
-    def test_query_open_balance(self):
+    def test_query_open_balances(self):
         balances = self.iface.getOpenBalances()
         assert balances.__repr__() == "[Balance 1, shared by Dana, Mick, 1 expense(s).]"
 
-    def test_query_closed_balance(self):
+    def test_query_closed_balances(self):
         balances = self.iface.getClosedBalances()
         assert balances.__repr__() == "[Balance 2, shared by Dana, Alizée, Loïc closed on 2013-04-16, 1 expense(s).]"
 
