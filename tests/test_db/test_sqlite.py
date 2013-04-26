@@ -37,7 +37,9 @@ class TestSQLiteIO:
         con.close()
         os.remove(fname)
 
-        dump_reference = open("test_database.sql", 'r').read()
+        current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+        ref_fname = os.path.join(current_dir, "test_database.sql")
+        dump_reference = open(ref_fname, 'r').read()
 
         assert_equals(dump, dump_reference, "Database dump differs from reference")
 
