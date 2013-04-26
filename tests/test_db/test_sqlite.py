@@ -4,6 +4,7 @@
 from nose.tools import assert_equals, assert_raises
 from expense_manager.db import DBInterface
 import hashlib, os, tempfile, inspect
+import sqlite3
 
 class TestSQLiteIO:
 
@@ -28,8 +29,17 @@ class TestSQLiteIO:
         fhdl = open(fname, 'rb')
         digest = hashlib.md5(fhdl.read()).hexdigest()
         fhdl.close()
-        #os.remove(fname)
-        assert digest == "d460c690bfffc07a7b49691f2bc3e2e6"
+
+        dump = ""
+        con = sqlite3.connect(fname)
+        for line in con.iterdump():
+            dump += '%s\n' % line
+        con.close()
+        os.remove(fname)
+
+        dump_reference = open("test_database.sql", 'r').read()
+
+        assert_equals(dump, dump_reference, "Database dump differs from reference")
 
 class TestSQLiteQuery:
 
