@@ -14,26 +14,45 @@ class Expense:
         Expense constructor.
         Throws: TypeError, ValueError
         """
-        try:
-            self.ID          = int(ID)
-            self.year        = int(year)
-            self.month       = int(month)
-            self.day         = int(day)
-            self.buyer       = buyer
-            self.amount      = float(amount)
-            self.description = str(description)
-        except TypeError as err:
-            raise
+        self.ID          = ID
+        self.year        = year
+        self.month       = month
+        self.day         = day
+        self.buyer       = buyer
+        self.amount      = amount
+        self.description = description
 
         self.sanityCheck()
+
+        if type(self.amount) is int:
+            self.amount = float(self.amount)
 
     def sanityCheck(self):
         """
         Audit method to assert that the state of the Expense instance is sane.
         Throws: ValueError, TypeError
         """
+        if type(self.ID) is not int:
+            raise TypeError("Identifiant invalide.")
+
+        if type(self.year) is not int:
+            raise TypeError("Année invalide.")
+
+        if type(self.month) is not int:
+            raise TypeError("Mois invalide.")
+
+        if type(self.day) is not int:
+            raise TypeError("Jour invalide.")
+
         if type(self.buyer) is not str:
             raise TypeError("Nom invalide.")
+
+        if type(self.amount) is not float and type(self.amount) is not int:
+            raise TypeError("Montant invalide.")
+
+        if type(self.description) is not str:
+            raise TypeError("Description invalide.")
+
         self.valueCheck()
 
     def valueCheck(self):
@@ -325,6 +344,7 @@ class Balance:
 
         self.expenses.append(expense)
         self.calculate()
+        self.sanityCheck()
 
     def __repr__(self, indent = 0, dump = False):
         indentation = indent
