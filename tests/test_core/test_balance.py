@@ -32,7 +32,7 @@ class TestBalanceInit:
     def testInitBadDebtorType(self):
         Balance(1, "Dana", 2013, 2, 10)
 
-    @raises(ValueError)
+    @raises(TypeError)
     def testInitBadDebtorList(self):
         Balance(1, [123], 2013, 2, 10)
 

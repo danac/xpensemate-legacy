@@ -107,15 +107,12 @@ class Balance:
         Balance constructor.
         Throws: TypeError, ValueError
         """
-        try:
-            self.ID       = int(ID)
-            self.year     = year
-            self.month    = month
-            self.day      = day
-            self.expenses = []
-            self.debtors  = debtors
-        except TypeError as err:
-            raise
+        self.ID       = ID
+        self.year     = year
+        self.month    = month
+        self.day      = day
+        self.expenses = []
+        self.debtors  = debtors
 
         self.average = 0.0
         self.total = 0.0
@@ -174,6 +171,15 @@ class Balance:
 
     def valueCheck(self):
 
+        if type(self.ID) is not int:
+            raise TypeError("Identifiant invalide.")
+
+        if self.ID <= 0:
+            raise ValueError("Identifiant invalide.")
+
+        if type(self.debtors) is not list:
+            raise TypeError("Liste de débiteurs invalide.")
+
         if not len(self.debtors) > 0:
             raise ValueError("Aucun débiteur.")
 
@@ -181,7 +187,7 @@ class Balance:
             if not type(debtor) is str:
                 message = "Le débiteur \"{}\" n'a pas le bon type ".format(debtor)
                 "(devrait être \"{}\" au lieu de \"{}\")".format(str, type(debtor))
-                raise ValueError(message)
+                raise TypeError(message)
 
         date_fields = [self.day, self.month, self.year]
         if not ( all(i is None for i in date_fields) or
@@ -209,26 +215,7 @@ class Balance:
 
     def sanityCheck(self):
 
-        assert type(self.ID) is int, (
-            "L'identifiant de bilan \"{}\" n'a pas le bon type "
-                .format(self.ID) +
-            "(devrait être \"{}\" au lieu de \"{}\")"
-                .format(int, type(self.ID)) )
-
-        assert self.ID > 0, (
-            "L'identifiant de bilan \"{}\" n'est pas admissible."
-                .format(self.ID) )
-
-        if type(self.debtors) is not list:
-            raise TypeError("List de débiteurs invalide.")
-
         for debtor in self.debtors:
-            assert type(debtor) is str, (
-                "Le débiteur \"{}\" du bilan \"{}\" n'a pas le bon type "
-                    .format(debtor, self.ID) +
-                "(devrait être \"{}\" au lieu de \"{}\")"
-                    .format(str, type(debtor)) )
-
             assert debtor in self.personal_paid, (
                 "Le débiteur \"{}\" n'est pas dans les paiements du bilan \"{}\""
                     .format(debtor, self.ID) )
