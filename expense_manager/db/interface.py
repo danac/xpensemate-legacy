@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ..core import Expense, Balance, Log
+from ..core import Log
 from . import model
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

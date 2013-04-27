@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-from .core import Expense, Balance, Log
-from .db import DBInterface
+from .core import Expense, Balance
 import logging, sys
 
 if __name__ == "__main__":

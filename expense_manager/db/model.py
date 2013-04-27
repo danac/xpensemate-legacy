@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from ..core import Balance, Expense, Log
-from sqlalchemy import Column, Integer, ForeignKey, String, Float, Text, ForeignKeyConstraint
+from sqlalchemy import Column, Integer, ForeignKey, String, Float, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-import inspect, os
 
 Base = declarative_base()
 
