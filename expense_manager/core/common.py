@@ -14,11 +14,11 @@ class Log:
 
     @classmethod
     def debug(cls, msg):
-       cls.logger.debug(cls.format(msg))
+        cls.logger.debug(cls.format(msg))
 
     @classmethod
     def info(cls, msg):
-       cls.logger.info(cls.format(msg))
+        cls.logger.info(cls.format(msg))
 
     @staticmethod
     def format(msg):
