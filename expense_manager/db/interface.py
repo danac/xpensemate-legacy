@@ -19,10 +19,10 @@ class DBInterface:
         self.session = self.Session()
         Log.info("Record database opened")
 
-    def createStructure(self):
-        model.createStructure(self.engine)
+    def create_structure(self):
+        model.create_structure(self.engine)
 
-    def getOpenBalances(self):
+    def get_open_balances(self):
         open_balances = []
 
         query = (
@@ -31,11 +31,11 @@ class DBInterface:
                 .order_by(model.DbBalance.id) )
 
         for balance in query:
-            open_balances.append(balance.makeBalance())
+            open_balances.append(balance.make_balance())
 
         return open_balances
 
-    def getClosedBalances(self):
+    def get_closed_balances(self):
         closed_balances = []
 
         query = ( self.session.query(model.DbBalance)
@@ -43,15 +43,15 @@ class DBInterface:
             .order_by(model.DbBalance.id) )
 
         for balance in query:
-            closed_balances.append(balance.makeBalance())
+            closed_balances.append(balance.make_balance())
 
         return closed_balances
 
-    def getPersons(self):
+    def get_persons(self):
         return [row[0] for row in self.session.query(model.DbPerson).values(model.DbPerson.name)]
 
-    def getExpense(self, **kwargs):
+    def get_expenses(self, **kwargs):
         query = self.session.query(model.DbExpense)
         for key in kwargs:
             query = query.filter(getattr(model.DbExpense, key) == kwargs[key])
-        return [db_exp.makeExpense() for db_exp in query]
+        return [db_exp.make_expense() for db_exp in query]

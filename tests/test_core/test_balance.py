@@ -18,11 +18,11 @@ class TestBalanceInit:
 
     def testInitNoDate(self):
         bal = Balance(1, ["Dana"])
-        bal.sanityCheck()
+        bal.sanity_check()
 
     def testInit(self):
         bal = Balance(1, ["Dana", "Alizée", "Mik"], 2013, 2, 10)
-        bal.sanityCheck()
+        bal.sanity_check()
 
     @raises(ValueError)
     def testInitBadDebtorEmptyList(self):
@@ -69,18 +69,18 @@ class TestBalanceMain:
     def tearDown(self):
         pass
 
-    def testAddExpense(self):
+    def testadd_expense(self):
         exp = Expense(2, 2013, 4, 20, "Dana", 10.50, "Trucs...")
-        self.inst.addExpense(exp)
+        self.inst.add_expense(exp)
 
     @raises(TypeError)
-    def testAddExpenseBadType(self):
-        self.inst.addExpense("coucou")
+    def testadd_expenseBadType(self):
+        self.inst.add_expense("coucou")
 
     @raises(ValueError)
-    def testAddExpenseBadDebtor(self):
+    def testadd_expenseBadDebtor(self):
         exp = Expense(2, 2013, 4, 18, "Loïc", 10.50, "Trucs...")
-        self.inst.addExpense(exp)
+        self.inst.add_expense(exp)
 
     def testCalculate_1(self):
         exp1 = Expense(2, 2013, 4, 20, "Dana", 18, "Trucs...")
@@ -88,11 +88,11 @@ class TestBalanceMain:
         exp3 = Expense(2, 2013, 4, 18, "Alizée", 10, "Trucs...")
         self.inst.debtors.append("Loïc")
         self.inst.calculate()
-        self.inst.addExpense(exp1)
-        self.inst.addExpense(exp2)
-        self.inst.addExpense(exp3)
+        self.inst.add_expense(exp1)
+        self.inst.add_expense(exp2)
+        self.inst.add_expense(exp3)
         self.inst.calculate()
-        self.inst.sanityCheck()
+        self.inst.sanity_check()
 
         eq_(self.inst.total, 60)
         eq_(self.inst.average, 15)
@@ -106,7 +106,7 @@ class TestBalanceMain:
 
     def testCalculateEmpty(self):
         self.inst.calculate()
-        self.inst.sanityCheck()
+        self.inst.sanity_check()
 
     def testRepr(self):
         print(self.inst)

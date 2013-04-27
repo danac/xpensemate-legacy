@@ -19,7 +19,7 @@ class TestExpenseInit:
 
     def testInit(self):
         exp = Expense(2, 2013, 4, 20, "Dana", 10.50, "Trucs...")
-        exp.sanityCheck()
+        exp.sanity_check()
 
     @raises(ValueError)
     def testInitBadId(self):

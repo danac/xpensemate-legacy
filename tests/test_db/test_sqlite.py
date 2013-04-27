@@ -20,12 +20,12 @@ class TestSQLiteIO:
 
     def test_structure_to_memory(self):
         interface_memory = DBInterface("")
-        interface_memory.createStructure()
+        interface_memory.create_structure()
 
     def test_structure_to_file(self):
         fname = os.path.join(tempfile.gettempdir(), "__expense_manager_test_db.db")
         interface_to_file = DBInterface(fname)
-        interface_to_file.createStructure()
+        interface_to_file.create_structure()
 
         dump = ""
         con = sqlite3.connect(fname)
@@ -55,18 +55,18 @@ class TestSQLiteQuery:
         pass
 
     def test_query_persons(self):
-        persons = self.iface.getPersons()
+        persons = self.iface.get_persons()
         assert persons.__repr__() == "['Dana', 'Alizée', 'Loïc', 'Mick']"
 
     def test_query_open_balances(self):
-        balances = self.iface.getOpenBalances()
+        balances = self.iface.get_open_balances()
         assert balances.__repr__() == "[Balance 1, shared by Dana, Mick, 1 expense(s).]"
 
     def test_query_closed_balances(self):
-        balances = self.iface.getClosedBalances()
+        balances = self.iface.get_closed_balances()
         assert balances.__repr__() == "[Balance 2, shared by Dana, Alizée, Loïc closed on 2013-04-16, 1 expense(s).]"
 
     def test_query_expense(self):
-        expense = self.iface.getExpense(year=2013, day=29, id=2)
+        expense = self.iface.get_expenses(year=2013, day=29, id=2)
         assert expense.__repr__() == "[Expense 2, 0.5 by Dana on 2013-04-29.]"
 

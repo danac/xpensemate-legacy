@@ -9,7 +9,7 @@ import inspect, os
 
 Base = declarative_base()
 
-def createStructure(engine):
+def create_structure(engine):
     Base.metadata.create_all(engine)
     Log.info("Database structure created.")
 
@@ -33,7 +33,7 @@ class DbExpense(Base):
     buyer = relationship("DbPerson")
     balance = relationship("DbBalance")
 
-    def makeExpense(self):
+    def make_expense(self):
         expense = Expense(
             ID          = self.id,
             year        = self.year,
@@ -62,13 +62,13 @@ class DbBalance(Base):
     persons = relationship("DbPerson", secondary = DbBalancePerson.__table__)
     expenses = relationship("DbExpense")
 
-    def makeBalance(self):
+    def make_balance(self):
         names = []
         for i in self.persons:
             names.append(i.name)
         balance = Balance(ID=self.id, year=self.year, month=self.month, day=self.day, debtors=names)
         for expense in self.expenses:
-            balance.addExpense(expense.makeExpense())
+            balance.add_expense(expense.make_expense())
 
         Log.debug("Made a balance: {}".format(balance))
         return balance

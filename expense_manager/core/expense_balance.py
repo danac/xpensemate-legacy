@@ -22,12 +22,12 @@ class Expense:
         self.amount      = amount
         self.description = description
 
-        self.sanityCheck()
+        self.sanity_check()
 
         if type(self.amount) is int:
             self.amount = float(self.amount)
 
-    def sanityCheck(self):
+    def sanity_check(self):
         """
         Audit method to assert that the state of the Expense instance is sane.
         Throws: ValueError, TypeError
@@ -53,9 +53,9 @@ class Expense:
         if type(self.description) is not str:
             raise TypeError("Description invalide.")
 
-        self.valueCheck()
+        self.value_check()
 
-    def valueCheck(self):
+    def value_check(self):
         """
         Asserts that the values contained in the Expense instance are valid.
         Throws: ValueError
@@ -122,7 +122,7 @@ class Balance:
         self.personal_debts = {}
 
         self.reset()
-        self.sanityCheck()
+        self.sanity_check()
 
     def reset(self):
         """
@@ -169,7 +169,7 @@ class Balance:
                     debt[receiver] = abs(self.personal_diff[payer]) * ratio
                 self.personal_debts[payer] = debt
 
-    def valueCheck(self):
+    def value_check(self):
 
         if type(self.ID) is not int:
             raise TypeError("Identifiant invalide.")
@@ -213,7 +213,7 @@ class Balance:
             if type(self.month) is not int:
                 raise TypeError("Mois invalide (type \"{}\"".format(type(self.month)))
 
-    def sanityCheck(self):
+    def sanity_check(self):
 
         for debtor in self.debtors:
             assert debtor in self.personal_paid, (
@@ -228,7 +228,7 @@ class Balance:
                 "Le débiteur \"{}\" n'est pas dans les dettes du bilan \"{}\""
                     .format(debtor, self.ID) )
 
-        self.valueCheck()
+        self.value_check()
 
         test_total = 0.0
         for expense in self.expenses:
@@ -236,7 +236,7 @@ class Balance:
                 "La dépense \"{}\" n'est pas du bon type (type \"{}\")"
                     .format(self.ID, type(expense)) )
             try:
-                expense.sanityCheck()
+                expense.sanity_check()
             except ValueError as err:
                 raise ValueError(
                     "La dépense \"{}\" dans le bilan \"{}\" n'est pas valable.\n"
@@ -317,7 +317,7 @@ class Balance:
         Log.debug("Diffs: " + pformat(self.personal_diff))
         Log.debug("Debts: " + pformat(self.personal_debts))
 
-    def addExpense(self, expense):
+    def add_expense(self, expense):
 
         if type(expense) is not Expense:
             message = ( "Type de dépense inconnu (type \"{}\")."
@@ -331,7 +331,7 @@ class Balance:
 
         self.expenses.append(expense)
         self.calculate()
-        self.sanityCheck()
+        self.sanity_check()
 
     def __repr__(self, indent = 0, dump = False):
         indentation = indent
@@ -347,31 +347,33 @@ class Balance:
                     description += expense.__repr__(indentation)
 
             else:
-                description += ' '*indentation + ", {} expense(s).".format(len(self.expenses))
+                description += ' '*indentation
+                description += ", {} expense(s).".format(len(self.expenses))
 
         return description
 
 class ExpenseManager:
-    def __init__(self):
-        self.open_balances = []
-        self.db_connection = DBInterface()
+    #def __init__(self):
+        #self.open_balances = []
+        #self.db_connection = DBInterface()
 
-    def loadFromDB(self):
-        pass
+    #def loadFromDB(self):
+        #pass
 
-    def addOpenBalance(self, balance):
-        assert type(balance) is Balance, (
-            "Type de bilan inconnu (type \"{}\")."
-                .format(type(expense)) )
+    #def addOpenBalance(self, balance):
+        #assert type(balance) is Balance, (
+            #"Type de bilan inconnu (type \"{}\")."
+                #.format(type(expense)) )
 
-        open_balances.append(balance)
+        #open_balances.append(balance)
 
-    def sanityCheck(self):
-        for balance in self.open_balances:
-            assert type(balance) is Balance, (
-                "Type de bilan inconnu (type \"{}\")."
-                    .format(type(expense)) )
-            balance.sanityCheck()
+    #def sanity_check(self):
+        #for balance in self.open_balances:
+            #assert type(balance) is Balance, (
+                #"Type de bilan inconnu (type \"{}\")."
+                    #.format(type(expense)) )
+            #balance.sanity_check()
+    pass
 
 
 
