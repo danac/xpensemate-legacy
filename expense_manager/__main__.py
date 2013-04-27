@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
-from .expense import ExpenseManager, Expense, Balance
+from .core import Expense, Balance, Log
 from .db import DBInterface
-from .common import Log
 import logging, sys
 
 if __name__ == "__main__":
@@ -18,12 +17,5 @@ if __name__ == "__main__":
     except AssertionError as bug:
         print("Erreur d'assertion:", bug)
 
-    e.addExpense(exp)
+    e.add_expense(exp)
     print(e)
-
-    print("TESTING DB")
-    interface = DBInterface("expenses2.db")
-
-    for balance in interface.get_open_balances():
-        print(balance)
-        print("-----")
