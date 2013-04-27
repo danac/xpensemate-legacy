@@ -26,9 +26,6 @@ class TestSQLiteIO:
         fname = os.path.join(tempfile.gettempdir(), "__expense_manager_test_db.db")
         interface_to_file = DBInterface(fname)
         interface_to_file.createStructure()
-        fhdl = open(fname, 'rb')
-        digest = hashlib.md5(fhdl.read()).hexdigest()
-        fhdl.close()
 
         dump = ""
         con = sqlite3.connect(fname)

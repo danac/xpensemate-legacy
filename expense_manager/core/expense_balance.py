@@ -5,67 +5,62 @@ from pprint import pformat
 from .common import Log, Constants
 
 class Expense:
+    """
+    Structure representing a single expense.
+    """
 
     def __init__(self, ID, year, month, day, buyer, amount, description):
-        self.ID          = int(ID)
-        self.year        = int(year)
-        self.month       = int(month)
-        self.day         = int(day)
-        self.buyer       = buyer
-        self.amount      = float(amount)
-        self.description = description
+        """
+        Expense constructor.
+        Throws: TypeError, ValueError
+        """
+        try:
+            self.ID          = int(ID)
+            self.year        = int(year)
+            self.month       = int(month)
+            self.day         = int(day)
+            self.buyer       = buyer
+            self.amount      = float(amount)
+            self.description = str(description)
+        except TypeError as err:
+            raise
 
-        self.valueCheck()
+        self.sanityCheck()
 
     def sanityCheck(self):
-
-        assert type(self.ID) is int, (
-            "L'identifiant de dépense \"{}\" n'a pas le bon type "
-                .format(self.ID) +
-            "(devrait être \"{}\" au lieu de \"{}\")."
-                .format(int, type(self.ID)) )
-
-        assert self.ID > 0, ( "L'identifiant de dépense \"{}\" n'est pas admissible."
-                             .format(self.ID) )
-
+        """
+        Audit method to assert that the state of the Expense instance is sane.
+        Throws: ValueError, TypeError
+        """
+        if type(self.buyer) is not str:
+            raise TypeError("Nom invalide.")
         self.valueCheck()
 
     def valueCheck(self):
+        """
+        Asserts that the values contained in the Expense instance are valid.
+        Throws: ValueError
+        """
 
-        if not type(self.year) is int:
-            raise TypeError("Année invalide.")
+        if self.ID <= 0:
+            raise ValueError("Identifiant de dépense invalide.")
 
-        if not self.year >= Constants.MIN_YEAR:
+        if self.year < Constants.MIN_YEAR:
             raise ValueError("Année invalide.")
 
-        if not type(self.month) is int:
-            raise TypeError("Mois invalide.")
-
-        if not self.month > 0 and self.month <= 12:
+        if self.month <= 0 or self.month > 12:
             raise ValueError("Mois invalide.")
 
-        if not type(self.day) is int:
-            raise TypeError("Jour du mois invalide.")
-
-        if not self.day > 0 and self.day <= 31:
+        if self.day <= 0 or self.day > 31:
             raise ValueError("Jour du mois invalide.")
-
-        if type(self.description) is not str:
-            raise TypeError("Description invalide.")
 
         if self.description == "":
             raise ValueError("Description invalide.")
 
-        if type(self.buyer) is not str:
-            raise TypeError("Nom invalide.")
-
         if self.buyer == "":
             raise ValueError("Nom invalide.")
 
-        if type(self.amount) is not float and type(self.amount) is not int:
-            raise TypeError("Montant invalide (type \"{}\".".format(type(self.amount)))
-
-        if not self.amount > 0:
+        if self.amount <= 0:
             raise ValueError("Montant invalide.")
 
         date_fields = [self.day, self.month, self.year]
@@ -75,19 +70,33 @@ class Expense:
             raise ValueError(message)
 
     def __repr__(self, indent = 0):
-        description = ' '*indent
-        description += ( "Expense {ID}, {amount} by {buyer} on {year}-{month:02}-{day:02}."
+        desc = ' '*indent
+        desc += ( "Expense {ID}, {amount} by {buyer} on {year}-{month:02}-{day:02}."
             .format(**self.__dict__) )
-        return description
+        return desc
 
 class Balance:
+    """
+    Structure representing a collection of expenses. A balance can be either open
+    or closed, in which case its closure date is defined. It is also assigned a list
+    of debtors (i.e. the list of people who made the expenses).
+    The Balance class is responsible for calculating the debts and the statistics related
+    to the expenses.
+    """
     def __init__(self, ID, debtors, year = None, month = None, day = None):
-        self.ID       = ID
-        self.year     = year
-        self.month    = month
-        self.day      = day
-        self.expenses = []
-        self.debtors  = debtors
+        """
+        Balance constructor.
+        Throws: TypeError, ValueError
+        """
+        try:
+            self.ID       = int(ID)
+            self.year     = year
+            self.month    = month
+            self.day      = day
+            self.expenses = []
+            self.debtors  = debtors
+        except TypeError as err:
+            raise
 
         self.average = 0.0
         self.total = 0.0
@@ -97,9 +106,13 @@ class Balance:
         self.personal_debts = {}
 
         self.reset()
-        self.valueCheck()
+        self.sanityCheck()
 
     def reset(self):
+        """
+        Resets all attributes involved in statistics and debts calculations.
+        Must be called before any call to the calculate method.
+        """
         self.average = 0.0
         self.total = 0.0
         self.total_delta = 0.0
@@ -114,6 +127,10 @@ class Balance:
             self.personal_debts[debtor] = {}
 
     def calculate(self):
+        """
+        Performs the statistics and debts calculations and updates.
+        The reset method must be called this method is called.
+        """
         self.reset()
 
         for expense in self.expenses:
@@ -171,7 +188,6 @@ class Balance:
             if type(self.month) is not int:
                 raise TypeError("Mois invalide (type \"{}\"".format(type(self.month)))
 
-
     def sanityCheck(self):
 
         assert type(self.ID) is int, (
@@ -183,6 +199,9 @@ class Balance:
         assert self.ID > 0, (
             "L'identifiant de bilan \"{}\" n'est pas admissible."
                 .format(self.ID) )
+
+        if type(self.debtors) is not list:
+            raise TypeError("List de débiteurs invalide.")
 
         for debtor in self.debtors:
             assert type(debtor) is str, (
