@@ -110,6 +110,7 @@ class TestBalanceMain:
 
     def testRepr(self):
         print(self.inst)
+        print(self.inst.__repr__(dump=True))
 
 
 

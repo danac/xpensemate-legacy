@@ -5,7 +5,7 @@ from nose.tools import eq_, raises
 from expense_manager.core import Expense
 
 
-class TestExpenseInit:
+class TestExpense:
 
     @classmethod
     def setupClass(cls):
@@ -17,9 +17,10 @@ class TestExpenseInit:
     def tearDown(self):
         pass
 
-    def testInit(self):
+    def testInitAndRepr(self):
         exp = Expense(2, 2013, 4, 20, "Dana", 10.50, "Trucs...")
         exp.sanity_check()
+        print(exp)
 
     @raises(ValueError)
     def testInitBadId(self):
@@ -60,5 +61,6 @@ class TestExpenseInit:
     @raises(ValueError)
     def testInitEmptyDescription(self):
         Expense(2, 2013, 4, 20, "Dana", 0.1, "")
+
 
 

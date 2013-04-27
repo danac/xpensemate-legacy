@@ -240,8 +240,7 @@ class Balance:
             except ValueError as err:
                 raise ValueError(
                     "La dépense \"{}\" dans le bilan \"{}\" n'est pas valable.\n"
-                        .format(expense.ID, self.ID) +
-                    err.message )
+                        .format(expense.ID, self.ID) + str(err) )
 
             if expense.buyer not in self.debtors:
                 raise ValueError(
