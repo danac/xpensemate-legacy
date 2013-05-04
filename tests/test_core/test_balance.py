@@ -17,44 +17,44 @@ class TestBalanceInit:
         pass
 
     def testInitNoDate(self):
-        bal = Balance(1, ["Dana"])
+        bal = Balance(["Dana"])
         bal.sanity_check()
 
     def testInit(self):
-        bal = Balance(1, ["Dana", "Alizée", "Mik"], 2013, 2, 10)
+        bal = Balance(["Dana", "Alizée", "Mik"], 2013, 2, 10)
         bal.sanity_check()
 
     @raises(ValueError)
     def testInitBadDebtorEmptyList(self):
-        Balance(1, [], 2013, 2, 10)
+        Balance([], 2013, 2, 10)
 
     @raises(TypeError)
     def testInitBadDebtorType(self):
-        Balance(1, "Dana", 2013, 2, 10)
+        Balance("Dana", 2013, 2, 10)
 
     @raises(TypeError)
     def testInitBadDebtorList(self):
-        Balance(1, [123], 2013, 2, 10)
+        Balance([123], 2013, 2, 10)
 
-    @raises(ValueError)
-    def testInitBadId(self):
-        Balance(0, ["Dana"], 2013, 2, 10)
+    #@raises(ValueError)
+    #def testInitBadId(self):
+        #Balance(0, ["Dana"], 2013, 2, 10)
 
     @raises(ValueError)
     def testInitBadYear(self):
-        Balance(1, ["Dana"], 2012, 2, 10)
+        Balance(["Dana"], 2012, 2, 10)
 
     @raises(ValueError)
     def testInitBadMonth(self):
-        Balance(1, ["Dana"], 2012, 13, 10)
+        Balance(["Dana"], 2012, 13, 10)
 
     @raises(ValueError)
     def testInitBadDay(self):
-        Balance(1, ["Dana"], 2012, 2, 32)
+        Balance(["Dana"], 2012, 2, 32)
 
     @raises(ValueError)
     def testInitBadDate(self):
-        Balance(1, ["Dana"], 2012, 10)
+        Balance(["Dana"], 2012, 10)
 
 
 class TestBalanceMain:
@@ -64,13 +64,13 @@ class TestBalanceMain:
         pass
 
     def setUp(self):
-        self.inst = Balance(1, ["Dana", "Alizée", "Mik"], 2013, 2, 10)
+        self.inst = Balance(["Dana", "Alizée", "Mik"], 2013, 2, 10)
 
     def tearDown(self):
         pass
 
     def testadd_expense(self):
-        exp = Expense(2, 2013, 4, 20, "Dana", 10.50, "Trucs...")
+        exp = Expense(2013, 4, 20, "Dana", 10.50, "Trucs...")
         self.inst.add_expense(exp)
 
     @raises(TypeError)
@@ -79,13 +79,13 @@ class TestBalanceMain:
 
     @raises(ValueError)
     def testadd_expenseBadDebtor(self):
-        exp = Expense(2, 2013, 4, 18, "Loïc", 10.50, "Trucs...")
+        exp = Expense(2013, 4, 18, "Loïc", 10.50, "Trucs...")
         self.inst.add_expense(exp)
 
     def testCalculate_1(self):
-        exp1 = Expense(2, 2013, 4, 20, "Dana", 18, "Trucs...")
-        exp2 = Expense(2, 2013, 4, 21, "Mik", 32, "Trucs...")
-        exp3 = Expense(2, 2013, 4, 18, "Alizée", 10, "Trucs...")
+        exp1 = Expense(2013, 4, 20, "Dana", 18, "Trucs...")
+        exp2 = Expense(2013, 4, 21, "Mik", 32, "Trucs...")
+        exp3 = Expense(2013, 4, 18, "Alizée", 10, "Trucs...")
         self.inst.debtors.append("Loïc")
         self.inst.calculate()
         self.inst.add_expense(exp1)
@@ -111,7 +111,4 @@ class TestBalanceMain:
     def testRepr(self):
         print(self.inst)
         print(self.inst.__repr__(dump=True))
-
-
-
 

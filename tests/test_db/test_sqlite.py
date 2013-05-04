@@ -3,6 +3,7 @@
 
 from nose.tools import assert_equals, assert_raises
 from expense_manager.db import DBInterface
+from expense_manager.core import Balance, Expense
 import hashlib, os, tempfile, inspect
 import sqlite3
 
@@ -56,17 +57,81 @@ class TestSQLiteQuery:
 
     def test_query_persons(self):
         persons = self.iface.get_persons()
-        assert persons.__repr__() == "['Dana', 'Alizée', 'Loïc', 'Mick']"
+        assert_equals(persons.__repr__(), "['Dana', 'Alizée', 'Loïc', 'Mick']")
 
     def test_query_open_balances(self):
         balances = self.iface.get_open_balances()
-        assert balances.__repr__() == "[Balance 1, shared by Dana, Mick, 1 expense(s).]"
+        print(balances[0].debtors)
+        assert_equals(balances[0].__repr__(show_id=True), "Balance shared by Dana, Mick, 1 expense(s), Id 1.")
 
     def test_query_closed_balances(self):
         balances = self.iface.get_closed_balances()
-        assert balances.__repr__() == "[Balance 2, shared by Dana, Alizée, Loïc closed on 2013-04-16, 1 expense(s).]"
+        print(balances[0].debtors)
+        assert_equals(balances[0].__repr__(indent=0, show_id=True), "Balance shared by Dana, Alizée, Loïc, closed on 2013-04-16, 1 expense(s), Id 2.")
 
     def test_query_expense(self):
-        expense = self.iface.get_expenses(year=2013, day=29, id=2)
-        assert expense.__repr__() == "[Expense 2, 0.5 by Dana on 2013-04-29.]"
+        expenses = self.iface.get_expenses(year=2013, day=29, id=2)
+        assert_equals(expenses[0].__repr__(show_id=True), "Expense 0.5 by Dana on 2013-04-29, Id 2.")
+
+
+class TestSQLiteBalance:
+
+    @classmethod
+    def setupClass(cls):
+        pass
+
+    def setUp(self):
+        self.interface = DBInterface("")
+        self.interface.create_structure()
+
+    def tearDown(self):
+        pass
+
+    def test_add_closed_balance(self):
+        balance = Balance(debtors = ["Dana", "Alizée", "Mik"], year = 2013, month = 2, day = 10)
+        self.interface.add_balance(balance)
+        resulting_balances = self.interface.get_closed_balances()
+        assert_equals(len(resulting_balances), 1)
+        assert_equals(resulting_balances[0].__repr__(), balance.__repr__())
+
+    def test_add_open_balance(self):
+        balance = Balance(debtors = ["Dana", "Alizée", "Mik"])
+        self.interface.add_balance(balance)
+        resulting_balances = self.interface.get_open_balances()
+        assert_equals(len(resulting_balances), 1)
+        assert_equals(resulting_balances[0].__repr__(show_id=False), balance.__repr__(show_id=False))
+
+
+class TestSQLiteExpense:
+
+    @classmethod
+    def setupClass(cls):
+        pass
+
+    def setUp(self):
+        self.interface = DBInterface("")
+        self.interface.create_structure()
+        balance = Balance(debtors = ["Dana", "Alizée", "Mik"])
+        self.interface.add_balance(balance)
+        open_bal = self.interface.get_open_balances()
+        self.balance_id = open_bal[0].ID
+        print(self.balance_id)
+
+    def tearDown(self):
+        pass
+
+    def test_add_remove_expense(self):
+        expense = Expense(year = 2013, month = 4, day = 20, buyer = "Dana", amount = 10.50, description = "Trucs...")
+        self.interface.add_expense(expense, self.balance_id)
+        resulting_balances = self.interface.get_open_balances()
+        print(resulting_balances)
+        assert_equals(len(resulting_balances), 1)
+        assert_equals(len(resulting_balances[0].expenses), 1)
+        assert_equals(resulting_balances[0].expenses[0].__repr__(), expense.__repr__())
+        expenses = self.interface.get_expenses(buyer = "Dana")
+        assert_equals(len(expenses), 1)
+        expense_id = expenses[0].ID
+        self.interface.delete_expense(expense_id)
+        expenses = self.interface.get_expenses(buyer = "Dana")
+        assert_equals(len(expenses), 0)
 
