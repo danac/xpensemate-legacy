@@ -32,6 +32,16 @@ class DbExpense(Base):
     buyer = relationship("DbPerson")
     balance = relationship("DbBalance")
 
+    def from_expense(self, expense, balance):
+        self.year = expense.year
+        self.month = expense.month
+        self.day = expense.day
+        self.description = expense.description
+        self.buyer = DbPerson(name = expense.buyer)
+        self.description = expense.description
+        self.amount = expense.amount
+        self.balance = balance
+
     def make_expense(self):
         expense = Expense(
             ID          = self.id,
@@ -71,4 +81,13 @@ class DbBalance(Base):
 
         Log.debug("Made a balance: {}".format(balance))
         return balance
+
+    def from_balance(self, balance):
+        self.year = balance.year
+        self.month = balance.month
+        self.day = balance.day
+        persons = []
+        for name in balance.debtors:
+            persons.append(DbPerson(name=name))
+        self.persons = persons
 

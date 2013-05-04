@@ -9,7 +9,7 @@ class Expense:
     Structure representing a single expense.
     """
 
-    def __init__(self, ID, year, month, day, buyer, amount, description):
+    def __init__(self, year, month, day, buyer, amount, description, ID = None):
         """
         Expense constructor.
         Throws: TypeError, ValueError
@@ -32,7 +32,7 @@ class Expense:
         Audit method to assert that the state of the Expense instance is sane.
         Throws: ValueError, TypeError
         """
-        if type(self.ID) is not int:
+        if type(self.ID) is not int and self.ID is not None:
             raise TypeError("Identifiant invalide.")
 
         if type(self.year) is not int:
@@ -61,8 +61,8 @@ class Expense:
         Throws: ValueError
         """
 
-        if self.ID <= 0:
-            raise ValueError("Identifiant de dépense invalide.")
+        #if self.ID <= 0:
+            #raise ValueError("Identifiant de dépense invalide.")
 
         if self.year < Constants.MIN_YEAR:
             raise ValueError("Année invalide.")
@@ -88,10 +88,14 @@ class Expense:
             message = "Date inconsistente.."
             raise ValueError(message)
 
-    def __repr__(self, indent = 0):
+    def __repr__(self, indent = 0, show_id = False):
         desc = ' '*indent
-        desc += ( "Expense {ID}, {amount} by {buyer} on {year}-{month:02}-{day:02}."
+        desc += ( "Expense {amount} by {buyer} on {year}-{month:02}-{day:02}"
             .format(**self.__dict__) )
+        if show_id:
+            desc += ", Id {}.".format(self.ID)
+        else:
+            desc += '.'
         return desc
 
 class Balance:
@@ -102,7 +106,7 @@ class Balance:
     The Balance class is responsible for calculating the debts and the statistics related
     to the expenses.
     """
-    def __init__(self, ID, debtors, year = None, month = None, day = None):
+    def __init__(self, debtors, year = None, month = None, day = None, ID = None):
         """
         Balance constructor.
         Throws: TypeError, ValueError
@@ -171,11 +175,11 @@ class Balance:
 
     def value_check(self):
 
-        if type(self.ID) is not int:
+        if type(self.ID) is not int and self.ID is not None:
             raise TypeError("Identifiant invalide.")
 
-        if self.ID <= 0:
-            raise ValueError("Identifiant invalide.")
+        #if self.ID <= 0:
+            #raise ValueError("Identifiant invalide.")
 
         if type(self.debtors) is not list:
             raise TypeError("Liste de débiteurs invalide.")
@@ -332,13 +336,13 @@ class Balance:
         self.calculate()
         self.sanity_check()
 
-    def __repr__(self, indent = 0, dump = False):
+    def __repr__(self, indent = 0, dump = False, show_id = False):
         indentation = indent
-        description = "Balance {}, shared by {}".format(self.ID, ', '.join(self.debtors))
+        description = "Balance shared by {}".format(', '.join(self.debtors))
         if(self.day is not None):
-            description += " closed on {year}-{month:02}-{day:02}".format(**self.__dict__)
+            description += ", closed on {year}-{month:02}-{day:02}".format(**self.__dict__)
         if len(self.expenses) == 0:
-            description += ' '*indentation + ", no expense."
+            description += ' '*indentation + ", no expense"
         else:
             if dump:
                 description += ":\n"
@@ -347,7 +351,12 @@ class Balance:
 
             else:
                 description += ' '*indentation
-                description += ", {} expense(s).".format(len(self.expenses))
+                description += ", {} expense(s)".format(len(self.expenses))
+        if show_id:
+            description += ", Id {}.".format(self.ID)
+        else:
+            description += '.'
+
 
         return description
 

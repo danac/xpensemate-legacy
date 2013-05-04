@@ -19,8 +19,43 @@ class DBInterface:
         self.session = self.Session()
         Log.info("Record database opened")
 
+    def _query_balance_by_id(self, balance_id):
+        query = (
+        self.session.query(model.DbBalance)
+            .filter(model.DbBalance.id == balance_id) )
+        assert query.count() == 1, "Several balances with same ID detected"
+        return query.first()
+
+    def _query_expense_by_id(self, expense_id):
+        query = (
+        self.session.query(model.DbExpense)
+            .filter(model.DbExpense.id == expense_id) )
+        assert query.count() == 1, "Several expenses with same ID detected"
+        return query.first()
+
     def create_structure(self):
         model.create_structure(self.engine)
+
+    def add_balance(self, balance):
+        balance.sanity_check()
+        db_balance = model.DbBalance()
+        db_balance.from_balance(balance)
+
+        self.session.add(db_balance)
+        self.session.commit()
+
+    def add_expense(self, expense, balance_id):
+        balance = self._query_balance_by_id(balance_id)
+        expense.sanity_check()
+        db_expense = model.DbExpense()
+        db_expense.from_expense(expense, balance)
+        self.session.add(db_expense)
+        self.session.commit()
+
+    def delete_expense(self, expense_id):
+        expense = self._query_expense_by_id(expense_id)
+        self.session.delete(expense)
+        self.session.commit()
 
     def get_open_balances(self):
         open_balances = []
@@ -53,5 +88,9 @@ class DBInterface:
     def get_expenses(self, **kwargs):
         query = self.session.query(model.DbExpense)
         for key in kwargs:
+            # Special treatment in case of a buyer filter (relationship)
+            if key == "buyer":
+                query = query.filter(model.DbPerson.name == kwargs[key])
+                continue
             query = query.filter(getattr(model.DbExpense, key) == kwargs[key])
         return [db_exp.make_expense() for db_exp in query]
