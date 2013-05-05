@@ -74,11 +74,11 @@ class TestBalanceMain:
         self.inst.add_expense(exp)
 
     @raises(TypeError)
-    def testadd_expenseBadType(self):
+    def testAddExpenseBadType(self):
         self.inst.add_expense("coucou")
 
     @raises(ValueError)
-    def testadd_expenseBadDebtor(self):
+    def testAddExpenseBadDebtor(self):
         exp = Expense(2013, 4, 18, "Loïc", 10.50, "Trucs...")
         self.inst.add_expense(exp)
 
