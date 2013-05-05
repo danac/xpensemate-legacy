@@ -42,7 +42,7 @@ class DBInterface:
         db_balance = model.DbBalance()
         db_balance.from_balance(balance)
 
-        self.session.add(db_balance)
+        self.session.merge(db_balance)
         self.session.commit()
 
     def close_balance(self, balance_id):
