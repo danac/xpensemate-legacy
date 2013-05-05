@@ -1,10 +1,12 @@
 {% extends "base_layout.html" %}
 
-{% block page_title %} Bilans ouverts {% endblock %}
+{% block page_title %} {{ title }} {% endblock %}
 
 {% block main_content %}
 <div class="thumbrow">
+    {% if editable %}
     <form id="form-balance-{{ balance.ID }}" name="expense" action="{{ prefix }}/dispatch" method="post">
+    {% endif %}
         <div id="title">
             <h2>
                     Bilan n° {{ balance.ID }} ({{ balance.debtors|join(', ') }})
@@ -16,7 +18,7 @@
                cellpadding="5"
                border="1"
                cellspacing="0"
-               class="sortable c9"
+               class="c9"
                onmouseover="javascript:trackTableHighlight(event, '#DAFCF9')"
                onmouseout="javascript:highlightTableRow(0);">
             <tr id="header">
@@ -39,7 +41,7 @@
             {% for expense in balance.expenses %}
             <tr>
                 <td align="left" class="c5" height="24">
-                    <span class="c1">{{ expense.year }}-{{ expense.month }}-{{ expense.day }}</span>
+                    <span class="c1">{{ "%d-%02d-%02d"|format(expense.year, expense.month, expense.day) }}</span>
                 </td>
 
                 <td align="left" class="c6" height="24">
@@ -54,11 +56,14 @@
                     <span class="c1">{{ "CHF %.2f"|format(expense.amount) }}</span>
                 </td>
 
+                {% if editable %}
                 <td align="left" class="c8" height="24">
                     <span class="c1"><input type="checkbox" name="flag-{{ expense.ID }}" value="True"></span>
                 </td>
+                {% endif %}
             </tr>
             {% endfor %}
+            {% if editable %}
             <tr>
                 <td align="left" class="c5" height="24">
                     <span class="c1"><input id="date" type="text" value="{{ today }}" name="date"></span>
@@ -76,14 +81,17 @@
                     <span class="c1"><input type="text" name="amount"></span>
                 </td>
             </tr>
+            {% endif %}
         </table>
         <div>&nbsp;
         </div>
+    {% if editable %}
         <input type="hidden" name="balance_id" value="{{ balance.ID }}">
         <button type="submit" name="action" value="expense-insert">Ajouter</button>
         <button type="submit" name="action" value="expense-delete">Supprimer la sélection</button>
         <button type="submit" name="action" value="balance-close">Fermer le bilan</button>
     </form>
+    {% endif %}
 </div>
 
 <div class="thumbrow">

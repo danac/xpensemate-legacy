@@ -1,15 +1,54 @@
 {% extends "base_layout.html" %}
 
-{% block page_title %} {{ title }} {% endblock %}
+{% block page_title %}
+<h1>
+{% if title[0].link %}
+    <a class="bluelink" href="{{ prefix }}/{{ title[0].link }}">
+{% endif %}
+{{ title[0].title }}
+{% if title[0].link %}
+    </a>
+{% endif %} -
+{% if title[1].link %}
+    <a class="bluelink" href="{{ prefix }}/{{ title[1].link }}">
+{% endif %}
+{{ title[1].title }}
+{% if title[1].link %}
+    </a>
+{% endif %}
+</h1>
+{% endblock %}
 
 {% block main_content %}
 <div class="thumbrow">
     {% for balance in balances %}
-    <div id="title">
-        <h2>
-            <a class="bluelink" href="{{ prefix }}/balance/{{ balance.ID }}">Bilan n° {{ balance.ID }} ({{ balance.debtors|join(', ') }})</a>
-        </h2>
-    </div>
+        {% if not balance.year %}
+            {% set info = balance.debtors|join(', ') %}
+        {% else %}
+            {% set info = "%d/%02d/%02d"|format(balance.year, balance.month, balance.day) + ', ' + balance.debtors|join(', ') %}
+        {% endif %}
+        <div id="title">
+            <h2>
+                <a class="bluelink" href="{{ prefix }}/balance/{{ balance.ID }}">Bilan n° {{ balance.ID }} ({{ date }} {{ info }})</a>
+            </h2>
+        </div>
     {% endfor %}
 </div>
+<br>
+{% if editable %}
+<div class="thumbrow">
+    Nouveau bilan:
+    <form id="form-balance-insert" name="expense" action="{{ prefix }}/dispatch" method="post">
+        <table>
+            <tr>
+                <td align="left" class="c8" height="24">
+                    <span class="c1"><input type="text" name="debtors" value="{{ persons }}"></span>
+                </td>
+            </tr>
+        </table>
+        <button type="submit" name="action" value="balance-insert">Ajouter</button>
+    </form>
+</div>
+{% endif %}
+
 {% endblock %}
