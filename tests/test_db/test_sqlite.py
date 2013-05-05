@@ -121,17 +121,34 @@ class TestSQLiteExpense:
         pass
 
     def test_add_remove_expense(self):
+        # Create an expense
         expense = Expense(year = 2013, month = 4, day = 20, buyer = "Dana", amount = 10.50, description = "Trucs...")
+        # Add it to the open balance created in the setUp
         self.interface.add_expense(expense, self.balance_id)
+        # Query the open balances
         resulting_balances = self.interface.get_open_balances()
-        print(resulting_balances)
+        # There must be only one balance
         assert_equals(len(resulting_balances), 1)
+        # There must be only one expense inside
         assert_equals(len(resulting_balances[0].expenses), 1)
+        # It must be the one just inserted
         assert_equals(resulting_balances[0].expenses[0].__repr__(), expense.__repr__())
+        # Query the expense
         expenses = self.interface.get_expenses(buyer = "Dana")
+        # There must be only one
         assert_equals(len(expenses), 1)
+        # It must still be the same
+        assert_equals(expenses[0].__repr__(), expense.__repr__())
+        # Get the Id
         expense_id = expenses[0].ID
+        # Delete it
         self.interface.delete_expense(expense_id)
+        # There must be no more expenses from that buyer
         expenses = self.interface.get_expenses(buyer = "Dana")
         assert_equals(len(expenses), 0)
+        # It this must be thae case through the balance as well
+        resulting_balances = self.interface.get_open_balances()
+        assert_equals(len(resulting_balances), 1)
+        assert_equals(len(resulting_balances[0].expenses), 0)
+
 
