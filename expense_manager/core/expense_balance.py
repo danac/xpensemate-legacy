@@ -360,29 +360,3 @@ class Balance:
 
         return description
 
-class ExpenseManager:
-    #def __init__(self):
-        #self.open_balances = []
-        #self.db_connection = DBInterface()
-
-    #def loadFromDB(self):
-        #pass
-
-    #def addOpenBalance(self, balance):
-        #assert type(balance) is Balance, (
-            #"Type de bilan inconnu (type \"{}\")."
-                #.format(type(expense)) )
-
-        #open_balances.append(balance)
-
-    #def sanity_check(self):
-        #for balance in self.open_balances:
-            #assert type(balance) is Balance, (
-                #"Type de bilan inconnu (type \"{}\")."
-                    #.format(type(expense)) )
-            #balance.sanity_check()
-    pass
-
-
-
-

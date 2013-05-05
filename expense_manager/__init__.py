@@ -1,1 +1,1 @@
-from . import core, db
+from .expense_manager import ExpenseManager
