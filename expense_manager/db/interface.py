@@ -5,6 +5,7 @@ from ..core import Log
 from . import model
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import datetime
 
 class DBInterface:
 
@@ -42,6 +43,15 @@ class DBInterface:
         db_balance.from_balance(balance)
 
         self.session.add(db_balance)
+        self.session.commit()
+
+    def close_balance(self, balance_id):
+        balance = self._query_balance_by_id(balance_id)
+        today = datetime.date.today()
+        balance.year = today.year
+        balance.month = today.month
+        balance.day = today.day
+        self.session.add(balance)
         self.session.commit()
 
     def add_expense(self, expense, balance_id):
@@ -94,3 +104,6 @@ class DBInterface:
                 continue
             query = query.filter(getattr(model.DbExpense, key) == kwargs[key])
         return [db_exp.make_expense() for db_exp in query]
+
+    def get_balance(self, id):
+        return self._query_balance_by_id(id).make_balance()

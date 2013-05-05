@@ -4,7 +4,7 @@
 from nose.tools import assert_equals, assert_raises
 from expense_manager.db import DBInterface
 from expense_manager.core import Balance, Expense
-import hashlib, os, tempfile, inspect
+import hashlib, os, tempfile, inspect, datetime
 import sqlite3
 
 class TestSQLiteIO:
@@ -100,6 +100,23 @@ class TestSQLiteBalance:
         resulting_balances = self.interface.get_open_balances()
         assert_equals(len(resulting_balances), 1)
         assert_equals(resulting_balances[0].__repr__(show_id=False), balance.__repr__(show_id=False))
+
+    def test_close_balance(self):
+        balance = Balance(debtors = ["Dana", "Alizée", "Mik"])
+
+        today = datetime.date.today()
+        balance_closed = Balance(debtors = ["Dana", "Alizée", "Mik"], year = today.year, month = today.month, day = today.day)
+
+        self.interface.add_balance(balance)
+        balance = self.interface.get_open_balances()[0]
+        self.interface.close_balance(balance.ID)
+
+        resulting_balances = self.interface.get_open_balances()
+        assert_equals(len(resulting_balances), 0)
+
+        resulting_balances = self.interface.get_closed_balances()
+        assert_equals(len(resulting_balances), 1)
+        assert_equals(resulting_balances[0].__repr__(), balance_closed.__repr__())
 
 
 class TestSQLiteExpense:
