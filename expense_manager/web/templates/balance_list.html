@@ -1,13 +1,15 @@
 {% extends "base_layout.html" %}
 
-{% block page_title %} Bilans ouverts {% endblock %}
+{% block page_title %} {{ title }} {% endblock %}
 
 {% block main_content %}
 <div class="thumbrow">
+    {% for balance in balances %}
     <div id="title">
         <h2>
-            <a class="bluelink" href="{{ prefix }}/open_balances">Bilan n° XXX (Person XXX, Person XXX)</a>
+            <a class="bluelink" href="{{ prefix }}/balance/{{ balance.ID }}">Bilan n° {{ balance.ID }} ({{ balance.debtors|join(', ') }})</a>
         </h2>
     </div>
+    {% endfor %}
 </div>
 {% endblock %}
