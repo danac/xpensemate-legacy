@@ -1,0 +1,137 @@
+{% extends "base_layout.html" %}
+
+{% block page_title %} Bilans ouverts {% endblock %}
+
+{% block main_content %}
+<div class="thumbrow">
+    <form id="form XXX balID XXX" name="expense" action="{{ prefix }}/dispatch" method="post">
+        <div id="title">
+            <h2>
+                    Bilan n° {{ balID }} (Person XXX, Person XXX)
+            </h2>
+        </div>
+        <table id="plugandtable"
+               width="760"
+               height="48"
+               cellpadding="5"
+               border="1"
+               cellspacing="0"
+               class="sortable c9"
+               onmouseover="javascript:trackTableHighlight(event, '#DAFCF9')"
+               onmouseout="javascript:highlightTableRow(0);">
+            <tr id="header">
+                <th align="center" class="c2" height="24">
+                    <span class="c1">Date</span>
+                </th>
+
+                <th align="center" class="c3" height="24">
+                    <span class="c1">Nom</span>
+                </th>
+
+                <th align="center" class="c3" height="24">
+                    <span class="c1">Description</span>
+                </th>
+
+                <th align="center" class="c4" height="24">
+                    <span class="c1">Montant</span>
+                </th>
+            </tr>
+
+            <tr>
+                <td align="left" class="c5" height="24">
+                    <span class="c1">XXX DATE XXX</span>
+                </td>
+
+                <td align="left" class="c6" height="24">
+                    <span class="c1">XXX NAME XXX</span>
+                </td>
+
+                <td align="left" class="c7" height="24">
+                    <span class="c1">XXX DESCRIPTION XXX</span>
+                </td>
+
+                <td align="left" class="c8" height="24">
+                    <span class="c1">XXX AMOUNT XXX</span>
+                </td>
+
+                <td align="left" class="c8" height="24">
+                    <span class="c1"><input type="checkbox" name="flag-XXX ID XXX" value="True"></span>
+                </td>
+            </tr>
+            <tr>
+                <td align="left" class="c5" height="24">
+                    <span class="c1"><input id="date" type="text" value="XXX TODAY XXX" name="date"></span>
+                </td>
+
+                <td align="left" class="c6" height="24">
+                    <span class="c1"><input type="text" name="name"></span>
+                </td>
+
+                <td align="left" class="c7" height="24">
+                    <span class="c1"><input type="text" name="description"></span>
+                </td>
+
+                <td align="left" class="c8" height="24">
+                    <span class="c1"><input type="text" name="amount"></span>
+                </td>
+            </tr>
+        </table>
+        <div>&nbsp;
+        </div>
+        <button type="submit" name="action" value="insert-XXX balID">Ajouter</button>
+        <button type="submit" name="action" value="delete-XXX balID">Supprimer la sélection</button>
+        <button type="submit" name="action" value="close-XXX balID">Fermer le bilan</button>
+    </form>
+</div>
+
+<div class="thumbrow">
+    <table id="plugandtable"
+           width="560"
+           height="48"
+           cellpadding="5"
+           border="1"
+           cellspacing="0"
+           class="c9"
+           onmouseover="javascript:trackTableHighlight(event, '#DAFCF9')"
+           onmouseout="javascript:highlightTableRow(0);">
+
+        <tr>
+            <th align="center" class="c4" height="24">Total dépensé</th>
+            <td align="center" class="c5" height="24">
+                <span class="c1">XXX TOTAL XXX</span>
+            </td>
+        </tr>
+        <tr>
+            <th align="center" class="c4" height="24">Moyenne par personne</th>
+
+            <td align="center" class="c5" height="24">
+                <span class="c1">XXX AVERAGE XXX</span>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="thumbrow">
+    <table id="plugandtable"
+           width="460"
+           height="48"
+           cellpadding="5"
+           border="1"
+           cellspacing="0"
+           class="c9"
+           onmouseover="javascript:trackTableHighlight(event, '#DAFCF9')"
+           onmouseout="javascript:highlightTableRow(0);">
+
+        <tr>
+            <th align="center"
+                class="c4"
+                height="24"
+                rowspan="XXX NOMBRES DETTES XXX">Dettes XXX PERSON XXX</th>
+
+            <td align="center" class="c5" height="24">XXX DETTE XXX</td>
+        </tr>
+    </table>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="robots" content="all" />
+    <title>DonjonNET > Les Comptes</title>
+    <!-- to correct the unsightly Flash of Unstyled Content. http://www.bluerobot.com/web/css/fouc.asp -->
+    <script type="text/javascript"></script>
+    <script type='text/javascript' src='{{ prefix }}/static/scripts/table_sort.js'></script>
+    <script type='text/javascript' src='{{ prefix }}/static/scripts/table_highlight.js'></script>
+    <style type="text/css" title="currentStyle" media="screen">
+        @import "{{ prefix }}/static/css/table.css";
+    </style>
+	<style type="text/css" title="currentStyle" media="screen">
+		@import "{{ prefix }}/static/css/homepage.css";
+	</style>
+		<style type="text/css" title="currentStyle" media="screen">
+		@import "{{ prefix }}/static/fonts/fonts.css";
+	</style>
+    <link rel="icon" type="image/png" href="{{ prefix }}/static/img/kg.png">
+    <link href='http://fonts.googleapis.com/css?family=Risque|Faster+One' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+    <div id="container">
+        <div id="frame">
+	    <div id="main_title">
+		<h1>
+            {% block page_title %}
+            {% endblock %}
+		</h1>
+	    </div>
+            {% block main_content %}
+            {% endblock %}
+	    <br>
+            <div class="thumbrow">
+		<a href="{{ return_link }}">
+		    <div class="thumb">
+			<div class="image" style="background-image:url({{ prefix }}/static/img/donal.png);filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='{{ prefix }}/static/img/donal.png', sizingMethod='scale');"></div>
+			<div class="footer"><div>retour</div></div>
+		    </div>
+		</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
