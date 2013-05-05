@@ -4,7 +4,7 @@ import os.path, inspect
 
 web_module_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
-URL_PREFIX = ""#"expense_manager2"
-TEMPLATE_DIR = os.path.join(web_module_dir, "templates")
-STATIC_DIR = os.path.join(web_module_dir, "static")
-SERVER_PORT = 8080
+class WebParams:
+    template_dir = os.path.join(web_module_dir, "templates")
+    static_dir = os.path.join(web_module_dir, "static")
+    exp_mgr = None
