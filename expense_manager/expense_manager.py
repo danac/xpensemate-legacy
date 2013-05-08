@@ -36,3 +36,34 @@ class ExpenseManager:
 
     def get_persons(self):
         return self.db_interface.get_persons()
+
+    def add_expense(self, year, month, day, buyer, amount, description, balance_id):
+        name = buyer.strip().title()
+        desc = description.strip()
+        y = int(year)
+        m = int(month)
+        d = int(day)
+        money = float(str(amount).upper().replace('CHF', '').strip())
+        expense = Expense(year=y, month=m, day=d, buyer=name, description=desc, amount=money)
+        balance = self.db_interface.get_balance(id=int(balance_id))
+        balance.add_expense(expense)
+        self.db_interface.add_expense(expense, balance_id)
+
+    def delete_expense(self, expense_id):
+        i = int(expense_id)
+        self.db_interface.delete_expense(i)
+
+    def __repr__(self):
+        s = ""
+        s += "OPEN BALANCES\n"
+        open = self.get_open_balances()
+        if len(open) > 0:
+            for bal in self.get_open_balances():
+                s += str(bal)
+        s += "CLOSED BALANCES\n"
+        closed = self.get_closed_balances()
+        if len(closed) > 0:
+            for cbal in self.get_closed_balances():
+                s += str(cbal)
+        s += '\n'
+        return s
