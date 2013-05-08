@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import bottle
 from .. import ExpenseManager
@@ -14,6 +15,7 @@ static_dir = WebParams.static_dir
 exp_mgr = WebParams.exp_mgr
 parent = urljoin(prefix, '..')
 root = urljoin(prefix, '/')
+referrer_url = WebParams.referrer_url
 
 @app.route("/")
 @bottle.jinja2_view('balance_list.html')
@@ -23,7 +25,7 @@ def open_balances():
     title.append(dict(title="Bilans ouverts"))
     title.append(dict(title="Bilans fermés", link="closed"))
     persons = ', '.join(exp_mgr.get_persons())
-    return dict(prefix=prefix, return_link=parent, balances=balances, title=title, editable = True, persons=persons)
+    return dict(prefix=prefix, return_link=referrer_url, balances=balances, title=title, editable = True, persons=persons)
 
 @app.route("/closed")
 @bottle.jinja2_view('balance_list.html')
@@ -49,20 +51,35 @@ def balance(balID):
 @app.route ("/dispatch", method='POST')
 def dispatch():
     action = bottle.request.forms.get("action")
+    rep=""
     if action == "balance-close":
-        exp_mgr.close_balance(bottle.request.forms.get('balance_id'))
+        exp_mgr.close_balance(bottle.request.forms.balance_id)
         bottle.redirect(root)
     elif action == "balance-insert":
         exp_mgr.add_balance(bottle.request.forms.debtors) # Unicode fix
         bottle.redirect(root)
-        rep += "EXPENSE-INSERT<br>"
     elif action == "expense-insert":
-        rep += "EXPENSE-INSERT<br>"
+        date=datetime.datetime.strptime(bottle.request.forms.date, "%Y-%m-%d").date()
+        data=bottle.request.forms
+        exp_mgr.add_expense(year=date.year,
+                            month=date.month,
+                            day=date.day,
+                            amount=data.amount,
+                            description=data.description,
+                            buyer=data.name,
+                            balance_id=data.balance_id)
+        bottle.redirect(urljoin(root, 'balance/{}'.format(bottle.request.forms.balance_id)))
     elif action == "expense-delete":
-        rep += "EXPENSE-DELETE<br>"
-
-    for i in bottle.request.POST:
-        rep += "{}: {}<br>".format(i, bottle.request.POST.get(i))
+        exp_ids = []
+        for key in bottle.request.forms.keys():
+            if "flag" in key:
+                exp_ids.append(int(key.replace('flag-','')))
+        for i in exp_ids:
+            exp_mgr.delete_expense(i)
+        bottle.redirect(urljoin(root, 'balance/{}'.format(bottle.request.forms.balance_id)))
+    else:
+        rep += "Fonction pas implémentée !<br>"
+        rep += "POST dump: " + '; '.join(bottle.request.forms.keys())
     return rep
 
 @app.route("/static/<filepath:path>")

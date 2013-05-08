@@ -131,6 +131,7 @@
            class="c9"
            onmouseover="javascript:trackTableHighlight(event, '#DAFCF9')"
            onmouseout="javascript:highlightTableRow(0);">
+{% if editable %}
     {% for payer in balance.personal_debts.keys() %}
         {% if balance.personal_debts[payer]|length %}
         <tr>
@@ -145,6 +146,18 @@
         </tr>
         {% endif %}
     {% endfor %}
+{% else %}
+    {% for payer in balance.personal_paid.keys() %}
+        {% if balance.personal_paid[payer] %}
+        <tr>
+            <th align="center"
+                class="c4"
+                height="24">Total payé par {{ payer }}</th>
+            <td align="center" class="c5" height="24">{{ "CHF %.2f "|format(balance.personal_paid[payer]) }}</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+{% endif %}
     </table>
 </div>
 
