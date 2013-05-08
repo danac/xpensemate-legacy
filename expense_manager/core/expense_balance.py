@@ -88,7 +88,7 @@ class Expense:
             message = "Date inconsistente.."
             raise ValueError(message)
 
-    def __repr__(self, indent = 0, show_id = False):
+    def __str__(self, indent = 0, show_id = False):
         desc = ' '*indent
         desc += ( "Expense {amount} by {buyer} on {year}-{month:02}-{day:02}"
             .format(**self.__dict__) )
@@ -97,6 +97,9 @@ class Expense:
         else:
             desc += '.'
         return desc
+
+    def __repr__(self, indent = 0, show_id = False):
+        return self.__str__(indent, show_id)
 
 class Balance:
     """
@@ -336,7 +339,7 @@ class Balance:
         self.calculate()
         self.sanity_check()
 
-    def __repr__(self, indent = 0, dump = False, show_id = False):
+    def __str__(self, indent = 0, dump = False, show_id = False):
         indentation = indent
         description = "Balance shared by {}".format(', '.join(self.debtors))
         if(self.day is not None):
@@ -360,3 +363,6 @@ class Balance:
 
         return description
 
+
+    def __repr__(self, indent = 0, dump = False, show_id = False):
+        return self.__str__(indent, dump, show_id)
