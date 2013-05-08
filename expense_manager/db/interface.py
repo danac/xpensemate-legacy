@@ -40,7 +40,7 @@ class DBInterface:
     def add_balance(self, balance):
         balance.sanity_check()
         db_balance = model.DbBalance()
-        db_balance.from_balance(balance)
+        db_balance.from_balance(self.session, balance)
 
         self.session.merge(db_balance)
         self.session.commit()
@@ -55,12 +55,16 @@ class DBInterface:
         self.session.commit()
 
     def add_expense(self, expense, balance_id):
-        balance = self._query_balance_by_id(balance_id)
+        db_balance = self._query_balance_by_id(balance_id)
+        Log.info(db_balance.make_balance())
+        Log.info(expense)
+        Log.info(self.get_persons())
         expense.sanity_check()
         db_expense = model.DbExpense()
-        db_expense.from_expense(expense, balance)
+        db_expense.from_expense(self.session, expense, db_balance)
         self.session.add(db_expense)
         self.session.commit()
+        Log.info(self.get_persons())
 
     def delete_expense(self, expense_id):
         expense = self._query_expense_by_id(expense_id)

@@ -6,23 +6,70 @@ from sqlalchemy import Column, Integer, ForeignKey, String, Float, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
+def _unique(session, cls, hashfunc, queryfunc, constructor, arg, kw):
+    cache = getattr(session, '_unique_cache', None)
+    if cache is None:
+        session._unique_cache = cache = {}
+
+    key = (cls, hashfunc(*arg, **kw))
+    if key in cache:
+        return cache[key]
+    else:
+        with session.no_autoflush:
+            q = session.query(cls)
+            q = queryfunc(q, *arg, **kw)
+            obj = q.first()
+            if not obj:
+                obj = constructor(*arg, **kw)
+                session.add(obj)
+        cache[key] = obj
+        return obj
+class UniqueMixin:
+
+    @classmethod
+    def unique_hash(cls, *arg, **kw):
+        raise NotImplementedError()
+
+    @classmethod
+    def unique_filter(cls, query, *arg, **kw):
+        raise NotImplementedError()
+
+    @classmethod
+    def as_unique(cls, session, *arg, **kw):
+        return _unique(
+                    session,
+                    cls,
+                    cls.unique_hash,
+                    cls.unique_filter,
+                    cls,
+                    arg, kw
+               )
+
 Base = declarative_base()
 
 def create_structure(engine):
     Base.metadata.create_all(engine)
     Log.info("Database structure created.")
 
-class DbPerson(Base):
+class DbPerson(UniqueMixin, Base):
     __tablename__ = "person"
     id = Column("id", Integer, primary_key=True)
-    name = Column("name", String(50))
+    name = Column("name", String(50), unique=True)
+
+    @classmethod
+    def unique_hash(cls, name):
+        return name
+
+    @classmethod
+    def unique_filter(cls, query, name):
+        return query.filter(DbPerson.name == name)
 
 class DbExpense(Base):
     __tablename__ = "expense"
 
     id          = Column("id",          Integer, primary_key = True)
     year        = Column("year",        Integer,                           nullable = False)
-    month       = Column("month",        Integer,                           nullable = False)
+    month       = Column("month",       Integer,                           nullable = False)
     day         = Column("day",         Integer,                           nullable = False)
     description = Column("description", Text,                              nullable = False)
     amount      = Column("amount",      Float,                             nullable = False)
@@ -32,15 +79,15 @@ class DbExpense(Base):
     buyer = relationship("DbPerson")
     balance = relationship("DbBalance")
 
-    def from_expense(self, expense, balance):
+    def from_expense(self, session, expense, db_balance):
         self.year = expense.year
         self.month = expense.month
         self.day = expense.day
         self.description = expense.description
-        self.buyer = DbPerson(name = expense.buyer)
+        self.buyer = DbPerson.as_unique(session, name = expense.buyer)
         self.description = expense.description
         self.amount = expense.amount
-        self.balance = balance
+        self.balance = db_balance
 
     def make_expense(self):
         expense = Expense(
@@ -82,12 +129,12 @@ class DbBalance(Base):
         Log.debug("Made a balance: {}".format(balance))
         return balance
 
-    def from_balance(self, balance):
+    def from_balance(self, session, balance):
         self.year = balance.year
         self.month = balance.month
         self.day = balance.day
         persons = []
         for name in balance.debtors:
-            persons.append(DbPerson(name=name))
+            persons.append(DbPerson.as_unique(session, name = name))
         self.persons = persons
 

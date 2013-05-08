@@ -29,6 +29,7 @@ CREATE TABLE expense (
 CREATE TABLE person (
 	id INTEGER NOT NULL, 
 	name VARCHAR(50), 
-	PRIMARY KEY (id)
+	PRIMARY KEY (id), 
+	UNIQUE (name)
 );
 COMMIT;
