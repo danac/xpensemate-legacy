@@ -18,6 +18,7 @@ class DBInterface:
         self.engine = create_engine(db_path, echo=echo)
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
+        self.create_structure()
         Log.info("Record database opened")
 
     def _query_balance_by_id(self, balance_id):
