@@ -1,4 +1,4 @@
-def app(exp_mgr, prefix, referrer_url):
+def app(exp_mgr, prefix, referrer_url = '/'):
     from .config import WebParams
     WebParams.referrer_url = referrer_url
     WebParams.url_prefix = prefix

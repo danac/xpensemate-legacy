@@ -5,7 +5,7 @@ import inspect
 import os.path
 
 prefix = ""
-hostname = "donjon.terra-amata"
+hostname = "localhost"
 db_file = os.path.join(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))), "expenses.db")
 exp_mgr = ExpenseManager(db_file)
 webapp = app(exp_mgr, prefix, 'http://' + hostname)

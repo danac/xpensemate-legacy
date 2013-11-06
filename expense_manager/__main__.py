@@ -1,5 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-#
+import logging
+
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
+
 
 #boilerplate to allow running as script directly
 if __name__ == "__main__" and __package__ is None:
@@ -22,6 +27,6 @@ from .web import app
 from . import ExpenseManager
 
 prefix = ""
-exp_mgr = ExpenseManager(db_file="test_database.db")
+exp_mgr = ExpenseManager(db_file="expenses.db")
 webapp = app(exp_mgr, prefix)
 webapp.run(host='localhost', port=8080, reloader=True)

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import bottle
-from .. import ExpenseManager
 from .config import WebParams
 from urllib.parse import urljoin
 import datetime
@@ -39,7 +38,7 @@ def closed_balances():
 @app.route("/balance/<balID:int>")
 @bottle.jinja2_view('balance.html')
 def balance(balID):
-    balance = exp_mgr.get_balance(id = balID)
+    balance = exp_mgr.get_balance(bal_id = balID)
     open = True
     return_link = root
     if balance.year is not None:

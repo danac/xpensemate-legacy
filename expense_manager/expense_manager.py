@@ -4,9 +4,10 @@
 from .db import DBInterface
 from .core import Balance, Expense
 
+
 class ExpenseManager:
 
-    def __init__(self, db_file = ""):
+    def __init__(self, db_file=""):
         self.db_file = db_file
         self.db_interface = DBInterface(db_file)
 
@@ -18,12 +19,12 @@ class ExpenseManager:
         balances = self.db_interface.get_closed_balances()
         return balances
 
-    def get_balance(self, id):
-        balance = self.db_interface.get_balance(id = id)
+    def get_balance(self, bal_id):
+        balance = self.db_interface.get_balance(id=bal_id)
         return balance
 
     def close_balance(self, id):
-        self.db_interface.close_balance(balance_id = id)
+        self.db_interface.close_balance(balance_id=id)
 
     def add_balance(self, debtors):
         debtors_parse = debtors.split(',')
@@ -54,16 +55,16 @@ class ExpenseManager:
         self.db_interface.delete_expense(i)
 
     def __repr__(self):
-        s = ""
-        s += "OPEN BALANCES\n"
-        open = self.get_open_balances()
-        if len(open) > 0:
+        string = ""
+        string += "OPEN BALANCES\n"
+        open_bal = self.get_open_balances()
+        if len(open_bal) > 0:
             for bal in self.get_open_balances():
-                s += str(bal)
-        s += "CLOSED BALANCES\n"
-        closed = self.get_closed_balances()
-        if len(closed) > 0:
+                string += str(bal)
+        string += "CLOSED BALANCES\n"
+        closed_bal = self.get_closed_balances()
+        if len(closed_bal) > 0:
             for cbal in self.get_closed_balances():
-                s += str(cbal)
-        s += '\n'
-        return s
+                string += str(cbal)
+        string += '\n'
+        return string
