@@ -19,12 +19,12 @@ referrer_url = WebParams.referrer_url
 @app.route("/")
 @bottle.jinja2_view('balance_list.html')
 def open_balances():
-    balances = exp_mgr.get_open_balances()
+    balances, global_balance = exp_mgr.get_open_balances()
     title = []
     title.append(dict(title="Bilans ouverts"))
     title.append(dict(title="Bilans fermés", link="closed"))
     persons = ', '.join(exp_mgr.get_persons())
-    return dict(prefix=prefix, return_link=referrer_url, balances=balances, title=title, editable = True, persons=persons)
+    return dict(prefix=prefix, return_link=referrer_url, balances=balances, global_balance=global_balance, title=title, editable = True, persons=persons)
 
 @app.route("/closed")
 @bottle.jinja2_view('balance_list.html')
@@ -45,8 +45,7 @@ def balance(balID):
         open = False
         return_link = urljoin(return_link, 'closed')
     today = datetime.date.today().strftime('%Y-%m-%d')
-    balance.calculate()
-    return dict(prefix=prefix, return_link=return_link, balance = balance, today=today, editable=open)
+    return dict(prefix=prefix, return_link=return_link, balance=balance, today=today, editable=open)
 
 @app.route ("/dispatch", method='POST')
 def dispatch():

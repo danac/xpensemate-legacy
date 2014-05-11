@@ -77,8 +77,9 @@ class DBInterface:
             self.session.commit()
         except:
             balance.expenses.pop()
+            self.session.rollback()
             raise
-        
+            
     def delete_expense(self, expense_id):
         expense = self._query_expense_by_id(expense_id)
         self.session.delete(expense)
@@ -89,14 +90,25 @@ class DBInterface:
             self.session.query(model.DbBalance)
                 .filter(model.DbBalance.year == None)
                 .order_by(model.DbBalance.id) )
-
         return query
+
+    def get_global_balance(self):
+        query = (
+            self.session.query(model.DbBalance)
+                .filter(model.DbBalance.year == None)
+                .order_by(model.DbBalance.id) )
+        debtors = set()
+        for balance in query:
+            names = [person.name for person in balance.persons]
+            for name in names:
+                debtors.add(name)
+        global_balance = model.DbBalance.create(debtors, self.session)
+        return global_balance
 
     def get_closed_balances(self):
         query = ( self.session.query(model.DbBalance)
             .filter(model.DbBalance.year != None)
             .order_by(model.DbBalance.id) )
-
         return query
 
     def get_persons(self):

@@ -118,7 +118,7 @@ class Balance:
         self.average = 0.0
         self.total = 0.0
         self.total_delta = 0.0
-        debtors = [person.name for person in self.persons]
+        debtors = self.debtors
 
         self.personal_paid = {}
         self.personal_diff = {}
@@ -135,7 +135,7 @@ class Balance:
         The reset method must be called this method is called.
         """
         self._reset()
-        debtors = [person.name for person in self.persons]
+        debtors = self.debtors
 
         for expense in self.expenses:
             self.total += expense.amount
@@ -205,8 +205,8 @@ class Balance:
         self._reset()
         self.calculate()
       
-        debtors = [person.name for person in self.persons]
-        print(debtors)
+        debtors = self.debtors
+
         for debtor in debtors:
             assert debtor in self.personal_paid, (
                 "Le débiteur \"{}\" n'est pas dans les paiements du bilan \"{}\""
@@ -354,3 +354,14 @@ class Balance:
             
     def __repr__(self, indent = 0, dump = False, show_id = False):
         return self.__str__(indent, dump, show_id)
+
+    @property
+    def debtors(self):
+        if hasattr(self, '_debtors'):
+            return self._debtors
+        else:
+            return [person.name for person in self.persons]
+        
+    @debtors.setter
+    def debtors(self, value):
+        self._debtors = value

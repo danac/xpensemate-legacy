@@ -35,7 +35,36 @@
     {% endfor %}
 </div>
 <br>
+
 {% if editable %}
+<div class="thumbrow">
+    <table id="plugandtable"
+           width="460"
+           height="48"
+           cellpadding="5"
+           border="1"
+           cellspacing="0"
+           class="c9"
+           onmouseover="javascript:trackTableHighlight(event, '#DAFCF9')"
+           onmouseout="javascript:highlightTableRow(0);">
+  {% for payer in global_balance.personal_debts.keys() %}
+      {% if global_balance.personal_debts[payer]|length %}
+      <tr>
+          <th align="center"
+              class="c4"
+              height="24"
+              rowspan="{{ global_balance.personal_debts[payer]|length }}">Dettes {{ payer }}</th>
+
+          {% for receiver in global_balance.personal_debts[payer].keys() %}
+              <td align="center" class="c5" height="24">{{ "CHF %.2f à %s"|format(global_balance.personal_debts[payer][receiver], receiver) }}</td>
+              </tr><tr> 
+          {% endfor %}
+      </tr>
+      {% endif %}
+  {% endfor %}
+    </table>
+</div>
+<br>
 <div class="thumbrow">
     Nouveau bilan:
     <form id="form-balance-insert" name="expense" action="{{ prefix }}/dispatch" method="post">
