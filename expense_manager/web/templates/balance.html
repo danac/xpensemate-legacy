@@ -5,11 +5,11 @@
 {% block main_content %}
 <div class="thumbrow">
     {% if editable %}
-    <form id="form-balance-{{ balance.ID }}" name="expense" action="{{ prefix }}/dispatch" method="post">
+    <form id="form-balance-{{ balance.id }}" name="expense" action="{{ prefix }}/dispatch" method="post">
     {% endif %}
         <div id="title">
             <h2>
-                    Bilan n° {{ balance.ID }} ({{ balance.debtors|join(', ') }})
+                    Bilan n° {{ balance.id }} ({{ balance.debtors_str()}})
             </h2>
         </div>
         <table id="plugandtable"
@@ -45,7 +45,7 @@
                 </td>
 
                 <td align="left" class="c6" height="24">
-                    <span class="c1">{{ expense.buyer }}</span>
+                    <span class="c1">{{ expense.buyer.name }}</span>
                 </td>
 
                 <td align="left" class="c7" height="24">
@@ -58,7 +58,7 @@
 
                 {% if editable %}
                 <td align="left" class="c8" height="24">
-                    <span class="c1"><input type="checkbox" name="flag-{{ expense.ID }}" value="True"></span>
+                    <span class="c1"><input type="checkbox" name="flag-{{ expense.id }}" value="True"></span>
                 </td>
                 {% endif %}
             </tr>
@@ -86,7 +86,7 @@
         <div>&nbsp;
         </div>
     {% if editable %}
-        <input type="hidden" name="balance_id" value="{{ balance.ID }}">
+        <input type="hidden" name="balance_id" value="{{ balance.id }}">
         <button type="submit" name="action" value="expense-insert">Ajouter</button>
         <button type="submit" name="action" value="expense-delete">Supprimer la sélection</button>
         <button type="submit" name="action" value="balance-close">Fermer le bilan</button>
@@ -142,6 +142,7 @@
 
             {% for receiver in balance.personal_debts[payer].keys() %}
                 <td align="center" class="c5" height="24">{{ "CHF %.2f à %s"|format(balance.personal_debts[payer][receiver], receiver) }}</td>
+                </tr><tr> 
             {% endfor %}
         </tr>
         {% endif %}

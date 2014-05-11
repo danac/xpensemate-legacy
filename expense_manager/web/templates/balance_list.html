@@ -23,13 +23,13 @@
 <div class="thumbrow">
     {% for balance in balances %}
         {% if not balance.year %}
-            {% set info = balance.debtors|join(', ') %}
+            {% set info = balance.debtors_str() %}
         {% else %}
-            {% set info = "%d/%02d/%02d"|format(balance.year, balance.month, balance.day) + ', ' + balance.debtors|join(', ') %}
+            {% set info = "%d/%02d/%02d"|format(balance.year, balance.month, balance.day) + ', ' + balance.debtors_str() %}
         {% endif %}
         <div id="title">
             <h2>
-                <a class="bluelink" href="{{ prefix }}/balance/{{ balance.ID }}">Bilan n° {{ balance.ID }} ({{ date }} {{ info }})</a>
+                <a class="bluelink" href="{{ prefix }}/balance/{{ balance.id }}">Bilan n° {{ balance.id }} ({{ date }} {{ info }})</a>
             </h2>
         </div>
     {% endfor %}

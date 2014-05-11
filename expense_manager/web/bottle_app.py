@@ -45,6 +45,7 @@ def balance(balID):
         open = False
         return_link = urljoin(return_link, 'closed')
     today = datetime.date.today().strftime('%Y-%m-%d')
+    balance.calculate()
     return dict(prefix=prefix, return_link=return_link, balance = balance, today=today, editable=open)
 
 @app.route ("/dispatch", method='POST')

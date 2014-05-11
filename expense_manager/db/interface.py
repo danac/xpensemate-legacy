@@ -38,11 +38,8 @@ class DBInterface:
     def create_structure(self):
         model.create_structure(self.engine)
 
-    def add_balance(self, balance):
-        balance.sanity_check()
-        db_balance = model.DbBalance()
-        db_balance.from_balance(self.session, balance)
-
+    def add_balance(self, names):
+        db_balance = model.DbBalance.create(names, self.session)
         self.session.merge(db_balance)
         self.session.commit()
 
@@ -55,50 +52,56 @@ class DBInterface:
         self.session.add(balance)
         self.session.commit()
 
-    def add_expense(self, expense, balance_id):
-        db_balance = self._query_balance_by_id(balance_id)
-        Log.info(db_balance.make_balance())
-        Log.info(expense)
-        Log.info(self.get_persons())
-        expense.sanity_check()
-        db_expense = model.DbExpense()
-        db_expense.from_expense(self.session, expense, db_balance)
-        self.session.add(db_expense)
-        self.session.commit()
-        Log.info(self.get_persons())
-
+    def add_expense(self,
+                    year,
+                    month,
+                    day,
+                    buyer,
+                    description,
+                    amount,
+                    balance_id):
+        balance = self._query_balance_by_id(balance_id)
+        balance_id = balance.id
+        db_expense = model.DbExpense.create(year=year,
+                                            month=month,
+                                            day=day,
+                                            buyer=buyer,
+                                            description=description,
+                                            amount=amount,
+                                            balance_id=balance_id,
+                                            session=self.session)
+        balance.expenses.append(db_expense)
+        try:
+            balance.sanity_check()
+            self.session.add(db_expense)
+            self.session.commit()
+        except:
+            balance.expenses.pop()
+            raise
+        
     def delete_expense(self, expense_id):
         expense = self._query_expense_by_id(expense_id)
         self.session.delete(expense)
         self.session.commit()
 
     def get_open_balances(self):
-        open_balances = []
-
         query = (
             self.session.query(model.DbBalance)
                 .filter(model.DbBalance.year == None)
                 .order_by(model.DbBalance.id) )
 
-        for balance in query:
-            open_balances.append(balance.make_balance())
-
-        return open_balances
+        return query
 
     def get_closed_balances(self):
-        closed_balances = []
-
         query = ( self.session.query(model.DbBalance)
             .filter(model.DbBalance.year != None)
             .order_by(model.DbBalance.id) )
 
-        for balance in query:
-            closed_balances.append(balance.make_balance())
-
-        return closed_balances
+        return query
 
     def get_persons(self):
-        return [row[0] for row in self.session.query(model.DbPerson).values(model.DbPerson.name)]
+        query = self.session.query(model.DbPerson).values(model.DbPerson.name)
+        return [row[0] for row in query]
 
     def get_expenses(self, **kwargs):
         query = self.session.query(model.DbExpense)
@@ -108,7 +111,7 @@ class DBInterface:
                 query = query.filter(model.DbPerson.name == kwargs[key])
                 continue
             query = query.filter(getattr(model.DbExpense, key) == kwargs[key])
-        return [db_exp.make_expense() for db_exp in query]
+        return query
 
     def get_balance(self, id):
-        return self._query_balance_by_id(id).make_balance()
+        return self._query_balance_by_id(id)
