@@ -10,8 +10,19 @@ class ExpenseManager:
     def __init__(self, db_file=""):
         self.db_file = db_file
         self.db_interface = DBInterface(db_file)
+        self.cached_balances = None
+        self.cached_global_balance = None
+        self.cached_balances_map = dict()
 
+    def clear_cache(self):
+        self.cached_balances = None
+        self.cached_global_balance = None
+        self.cached_balances_map = dict()
+      
     def get_open_balances(self):
+        if self.cached_balances is not None and self.cached_global_balance is not None:
+            return self.cached_balances, self.cached_global_balance
+            
         balances = self.db_interface.get_open_balances()
         debtors = set()
         for balance in balances:
@@ -78,7 +89,11 @@ class ExpenseManager:
           global_balance.personal_debts[debtor] = \
               {key: value for key, value in global_balance.personal_debts[debtor].items() if value != 0.0}
         global_balance.personal_debts = \
-              {key: value for key, value in global_balance.personal_debts.items() if len(value) > 0}       
+              {key: value for key, value in global_balance.personal_debts.items() if len(value) > 0}
+
+        self.cached_balances = balances
+        self.cached_global_balance = global_balance
+        
         return balances, global_balance
 
     def get_closed_balances(self):
@@ -86,14 +101,20 @@ class ExpenseManager:
         return balances
 
     def get_balance(self, bal_id):
+        if bal_id in self.cached_balances_map.keys():
+            return self.cached_balances_map[bal_id]
+        
         balance = self.db_interface.get_balance(id=bal_id)
         balance.calculate()
+        self.cached_balances_map[bal_id] = balance
         return balance
 
     def close_balance(self, id):
+        self.clear_cache()
         self.db_interface.close_balance(balance_id=id)
 
     def add_balance(self, debtors):
+        self.clear_cache()
         debtors_parse = debtors.split(',')
         debtors_list = []
         for name in debtors_parse:
@@ -105,6 +126,7 @@ class ExpenseManager:
         return self.db_interface.get_persons()
 
     def add_expense(self, year, month, day, buyer, amount, description, balance_id):
+        self.clear_cache()
         name = buyer.strip().title()
         desc = description.strip()
         y = int(year)
@@ -120,6 +142,7 @@ class ExpenseManager:
                                       balance_id=balance_id)
 
     def delete_expense(self, expense_id):
+        self.clear_cache()
         i = int(expense_id)
         self.db_interface.delete_expense(i)
 
