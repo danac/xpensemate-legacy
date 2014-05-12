@@ -5,6 +5,7 @@ import bottle
 from .config import WebParams
 from urllib.parse import urljoin
 import datetime
+import time
 
 app = bottle.Bottle()
 bottle.TEMPLATE_PATH.insert(0, WebParams.template_dir)
@@ -19,11 +20,15 @@ referrer_url = WebParams.referrer_url
 @app.route("/")
 @bottle.jinja2_view('balance_list.html')
 def open_balances():
+    start = time.clock() 
     balances, global_balance = exp_mgr.get_open_balances()
     title = []
     title.append(dict(title="Bilans ouverts"))
     title.append(dict(title="Bilans fermés", link="closed"))
     persons = ', '.join(exp_mgr.get_persons())
+    elapsed = time.clock()
+    elapsed = elapsed - start
+    print("Time spent to prepare all balances: ", elapsed)
     return dict(prefix=prefix, return_link=referrer_url, balances=balances, global_balance=global_balance, title=title, editable = True, persons=persons)
 
 @app.route("/closed")
@@ -38,6 +43,7 @@ def closed_balances():
 @app.route("/balance/<balID:int>")
 @bottle.jinja2_view('balance.html')
 def balance(balID):
+    start = time.clock() 
     balance = exp_mgr.get_balance(bal_id = balID)
     open = True
     return_link = root
@@ -45,6 +51,9 @@ def balance(balID):
         open = False
         return_link = urljoin(return_link, 'closed')
     today = datetime.date.today().strftime('%Y-%m-%d')
+    elapsed = time.clock()
+    elapsed = elapsed - start
+    print("Time spent to prepare balance {}: ".format(balID), elapsed)
     return dict(prefix=prefix, return_link=return_link, balance=balance, today=today, editable=open)
 
 @app.route ("/dispatch", method='POST')
